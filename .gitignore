@@ -12,6 +12,5 @@ mvnw
 mvnw.cmd
 # .gitignore
 .idea/
-HELP.md
 sportapp.iml
 target/
