@@ -1,8 +1,8 @@
 package org.tevlrp.sportapp.model;
 
 public enum Permission {
-    DEVELOPERS_READ("developers:read"),
-    DEVELOPERS_WRITE("developers:write");
+    WORKOUT_READ("workout:read"),
+    WORKOUT_WRITE("workout:write");
 
     private final String permission;
 
