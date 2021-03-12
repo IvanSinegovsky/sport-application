@@ -2,7 +2,7 @@ package org.tevlrp.sportapp.rest;
 
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.tevlrp.sportapp.model.Workout;
+import org.tevlrp.sportapp.model.workout.Workout;
 
 import java.util.List;
 import java.util.stream.Collectors;
