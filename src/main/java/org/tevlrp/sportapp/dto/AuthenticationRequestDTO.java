@@ -1,4 +1,4 @@
-package org.tevlrp.sportapp.rest;
+package org.tevlrp.sportapp.dto;
 
 import lombok.Data;
 
