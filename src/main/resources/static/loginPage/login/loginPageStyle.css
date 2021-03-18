@@ -7,31 +7,39 @@
     width: 100%;
     height: 100vh;
     font-family: sans-serif;
-    background: rgb(88, 60, 155);
+    background: rgb(255, 255, 255);
     color: #fff;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-end;
+}
+.img-logo
+{
+    position: static;
+    margin-right: 200px;
+    width: 600px;
+    height: 200px;
 }
 .inner-box
 {
     position: relative;
     width: 100%;
     height: 100%;
+    background: rgb(24, 16, 71);
 }
 .card
 {
     width: 350px;
     height: 500px;
+    margin-right: 300px;
     box-shadow: 0 0 40px 20px rgba(0,0,0,0.26);
 }
 .card h2
 {
     font-weight: normal;
-    font-size: 24px;
+    font-size: 32px ;
     text-align: center;
     margin-bottom: 20px;
-    margin-top: 50px;
 }
 .inputbox
 {
@@ -70,6 +78,7 @@ button
 .submit-btn
 {
     position: relative;
+    margin-top: 50px;
 }
 .submit-btn::after
 {
@@ -88,6 +97,7 @@ button
 span{
     font-size: 13px;
     margin-left: 5px;
+    margin-top: 50px;
 }   
 .check-box
 {
