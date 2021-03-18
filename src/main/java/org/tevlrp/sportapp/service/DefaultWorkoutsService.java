@@ -46,7 +46,7 @@ public class DefaultWorkoutsService implements WorkoutsService {
     }
 
     @Override
-    public WorkoutsDto findByUserIdAndDate(Long userId, Date date) {
+    public WorkoutsDto findWorkoutByUserIdAndDate(Long userId, Date date) {
         Workout workout = workoutsRepository.findWorkoutByUserIdAndDate(userId, date);
 
         if (workout != null) {

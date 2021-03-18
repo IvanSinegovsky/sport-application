@@ -1,4 +1,4 @@
-package org.tevlrp.sportapp.rest;
+package org.tevlrp.sportapp.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

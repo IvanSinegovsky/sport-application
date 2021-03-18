@@ -11,5 +11,5 @@ public interface WorkoutsService {
 
     void deleteWorkout(Long userId, Date date);
 
-    WorkoutsDto findByUserIdAndDate(Long userId, Date date);
+    WorkoutsDto findWorkoutByUserIdAndDate(Long userId, Date date);
 }

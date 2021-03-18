@@ -1,4 +1,7 @@
 package org.tevlrp.sportapp.model.workout;
 
-public enum Exercise {
+public class Exercise {
+    private int repetitions;
+
+    private double maxWeight;
 }
