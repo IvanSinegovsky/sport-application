@@ -1,5 +1,5 @@
 package org.tevlrp.sportapp.model;
 
 public enum Status {
-    ACTIVE, BANNED
+    ACTIVE, NOT_ACTIVE, DELETED
 }

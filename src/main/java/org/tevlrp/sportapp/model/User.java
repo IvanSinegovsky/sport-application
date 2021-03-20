@@ -3,23 +3,15 @@ package org.tevlrp.sportapp.model;
 import lombok.Data;
 
 import javax.persistence.*;
+import java.util.List;
 
-@Data
 @Entity
 @Table(name = "users")
-public class User {
+@Data
+public class User extends BaseEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @OneToMany(cascade = CascadeType.ALL)
-    @JoinColumn(name = "users_id")
-    private Long id;
-
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "password")
-    private String password;
+    @Column(name = "username")
+    private String username;
 
     @Column(name = "first_name")
     private String firstName;
@@ -27,11 +19,15 @@ public class User {
     @Column(name = "last_name")
     private String lastName;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "role")
-    private Role role;
+    @Column(name = "email")
+    private String email;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "status")
-    private Status status;
+    @Column(name = "password")
+    private String password;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = {@JoinColumn(name = "user_id", referencedColumnName = "id")},
+            inverseJoinColumns = {@JoinColumn(name = "role_id", referencedColumnName = "id")})
+    private List<Role> roles;
 }
