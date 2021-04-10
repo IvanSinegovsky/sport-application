@@ -24,7 +24,6 @@ import java.util.List;
 
 @Component
 public class JwtTokenProvider {
-
     //на основании этого слова происходит генерация и дешефрация токена
     @Value("${jwt.token.secret}")
     private String secret;
@@ -40,7 +39,6 @@ public class JwtTokenProvider {
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
-
         return bCryptPasswordEncoder;
     }
 
@@ -50,7 +48,6 @@ public class JwtTokenProvider {
     }
 
     public String createToken(String username, List<Role> roles) {
-
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", getRoleNames(roles));
 
@@ -77,11 +74,9 @@ public class JwtTokenProvider {
     //анализ токена
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
-
         if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
             return bearerToken.substring(7, bearerToken.length());
         }
-
         return null;
     }
 
@@ -89,11 +84,9 @@ public class JwtTokenProvider {
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
-
             if (claims.getBody().getExpiration().before(new Date())) {
                 return false;
             }
-
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");
@@ -102,9 +95,7 @@ public class JwtTokenProvider {
 
     private List<String> getRoleNames(List<Role> userRoles) {
         List<String> roles = new ArrayList<>();
-
         userRoles.forEach(role -> roles.add(role.getName()));
-
         return roles;
     }
 }

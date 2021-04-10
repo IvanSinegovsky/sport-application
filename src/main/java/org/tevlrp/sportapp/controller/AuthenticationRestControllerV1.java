@@ -1,6 +1,5 @@
-package org.tevlrp.sportapp.rest;
+package org.tevlrp.sportapp.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -22,7 +21,6 @@ import java.util.Map;
 @RestController
 @RequestMapping(value = "/api/v1/auth/")
 public class AuthenticationRestControllerV1 {
-
     private final AuthenticationManager authenticationManager;
     private final JwtTokenProvider jwtTokenProvider;
     private final UserService userService;

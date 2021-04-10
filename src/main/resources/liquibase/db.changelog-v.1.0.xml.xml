@@ -89,7 +89,7 @@
                                  referencedTableName="users"/>
     </changeSet>
 
-    <changeSet id="1.0.4" author="etevlrp">
+    <changeSet id="1.0.4" author="tevlrp">
         <addForeignKeyConstraint baseColumnNames="role_id"
                                  baseTableName="user_roles"
                                  constraintName="fk_user_roles_roles"

@@ -8,7 +8,6 @@ import org.tevlrp.sportapp.model.User;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AdminUserDto {
-
     private Long id;
     private String username;
     private String firstName;
