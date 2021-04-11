@@ -3,22 +3,14 @@
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
 
-    <changeSet id="3.0.0" author="tevlrp">
-        <sqlFile dbms="mysql"
-                 encoding="UTF-8"
-                 endDelimiter="\nDELIMITER\n"
-                 relativeToChangelogFile="true"
-                 splitStatements="true"
-                 stripComments="true"
-                 path="20-create-user_roles-table.sql"/>
+    <changeSet id="1.0.2" author="tevlrp">
+        <createTable tableName="user_roles">
+            <column name="user_id" type="BIGINT"/>
+            <column name="role_id" type="BIGINT"/>
+        </createTable>
+
         <rollback>
-            <sqlFile dbms="mysql"
-                     encoding="UTF-8"
-                     endDelimiter="\nDELIMITER\n"
-                     relativeToChangelogFile="true"
-                     splitStatements="true"
-                     stripComments="true"
-                     path="20-drop-user_roles-table.sql"/>
+            <dropTable tableName="user_roles"/>
         </rollback>
     </changeSet>
 
