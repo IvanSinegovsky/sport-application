@@ -8,4 +8,4 @@ create table roles
     status  varchar(25) default 'ACTIVE'          not null,
     constraint name
         unique (name)
-);
+);s
