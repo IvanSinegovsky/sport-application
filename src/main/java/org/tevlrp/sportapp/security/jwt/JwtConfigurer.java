@@ -12,7 +12,6 @@ public class JwtConfigurer extends SecurityConfigurerAdapter<DefaultSecurityFilt
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    //Security Configuration: проверка запроса через фильтр
     @Override
     public void configure(HttpSecurity httpSecurity) throws Exception {
         JwtTokenFilter jwtTokenFilter = new JwtTokenFilter(jwtTokenProvider);

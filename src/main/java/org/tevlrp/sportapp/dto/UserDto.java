@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
 import org.tevlrp.sportapp.model.User;
 
-//юзеры при общении клиента и сервера конвертируются в этот объект во избежание проблем парсинга
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserDto {
@@ -14,9 +13,8 @@ public class UserDto {
     private String lastName;
     private String email;
 
-    public User toUser() {
+    public User toUser(){
         User user = new User();
-
         user.setId(id);
         user.setUsername(username);
         user.setFirstName(firstName);
@@ -28,7 +26,6 @@ public class UserDto {
 
     public static UserDto fromUser(User user) {
         UserDto userDto = new UserDto();
-
         userDto.setId(user.getId());
         userDto.setUsername(user.getUsername());
         userDto.setFirstName(user.getFirstName());

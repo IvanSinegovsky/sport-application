@@ -5,6 +5,7 @@ import lombok.Data;
 import org.tevlrp.sportapp.model.Status;
 import org.tevlrp.sportapp.model.User;
 
+
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AdminUserDto {
@@ -17,27 +18,23 @@ public class AdminUserDto {
 
     public User toUser() {
         User user = new User();
-
         user.setId(id);
         user.setUsername(username);
         user.setFirstName(firstName);
         user.setLastName(lastName);
         user.setEmail(email);
         user.setStatus(Status.valueOf(status));
-
         return user;
     }
 
     public static AdminUserDto fromUser(User user) {
         AdminUserDto adminUserDto = new AdminUserDto();
-
         adminUserDto.setId(user.getId());
         adminUserDto.setUsername(user.getUsername());
         adminUserDto.setFirstName(user.getFirstName());
         adminUserDto.setLastName(user.getLastName());
         adminUserDto.setEmail(user.getEmail());
         adminUserDto.setStatus(user.getStatus().name());
-
         return adminUserDto;
     }
 }

@@ -1,6 +1,11 @@
 package org.tevlrp.sportapp.security.jwt;
 
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.tevlrp.sportapp.model.Role;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -10,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
-import org.tevlrp.sportapp.model.Role;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -19,23 +23,19 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 
-
-//класс генерирует токен
-
 @Component
 public class JwtTokenProvider {
-    //на основании этого слова происходит генерация и дешефрация токена
+
     @Value("${jwt.token.secret}")
     private String secret;
 
-    //время жизни токена до истечения его действия
     @Value("${jwt.token.expired}")
-    private Long validityInMilliseconds;
+    private long validityInMilliseconds;
+
 
     @Autowired
     private UserDetailsService userDetailsService;
 
-    //используется в UserServiceImpl class для кодирования пароля
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
         BCryptPasswordEncoder bCryptPasswordEncoder = new BCryptPasswordEncoder();
@@ -48,17 +48,18 @@ public class JwtTokenProvider {
     }
 
     public String createToken(String username, List<Role> roles) {
+
         Claims claims = Jwts.claims().setSubject(username);
         claims.put("roles", getRoleNames(roles));
 
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-        return Jwts.builder()
-                .setClaims(claims)
-                .setIssuedAt(now)
-                .setExpiration(validity)
-                .signWith(SignatureAlgorithm.HS256, secret)
+        return Jwts.builder()//
+                .setClaims(claims)//
+                .setIssuedAt(now)//
+                .setExpiration(validity)//
+                .signWith(SignatureAlgorithm.HS256, secret)//
                 .compact();
     }
 
@@ -71,7 +72,6 @@ public class JwtTokenProvider {
         return Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject();
     }
 
-    //анализ токена
     public String resolveToken(HttpServletRequest req) {
         String bearerToken = req.getHeader("Authorization");
         if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
@@ -80,13 +80,14 @@ public class JwtTokenProvider {
         return null;
     }
 
-    //проверяет токен на его наличие и на действенность
     public boolean validateToken(String token) {
         try {
             Jws<Claims> claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token);
+
             if (claims.getBody().getExpiration().before(new Date())) {
                 return false;
             }
+
             return true;
         } catch (JwtException | IllegalArgumentException e) {
             throw new JwtAuthenticationException("JWT token is expired or invalid");
@@ -94,8 +95,12 @@ public class JwtTokenProvider {
     }
 
     private List<String> getRoleNames(List<Role> userRoles) {
-        List<String> roles = new ArrayList<>();
-        userRoles.forEach(role -> roles.add(role.getName()));
-        return roles;
+        List<String> result = new ArrayList<>();
+
+        userRoles.forEach(role -> {
+            result.add(role.getName());
+        });
+
+        return result;
     }
 }
