@@ -18,6 +18,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import java.util.HashMap;
 import java.util.Map;
 
+@CrossOrigin
 @Slf4j
 @RestController
 @RequestMapping(value = "/api/v1/auth/")
@@ -37,6 +38,7 @@ public class AuthenticationRestControllerV1 {
     public ResponseEntity login(@RequestBody UserAuthenticationRequestDto requestDto) {
         try {
             String email = requestDto.getEmail();
+            log.info("email {}", email);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
             User user = userService.findByEmail(email);
 
@@ -58,11 +60,10 @@ public class AuthenticationRestControllerV1 {
 
     @PostMapping("registration")
     public ResponseEntity register(@RequestBody UserRegistrationDto userRegistrationDto) {
-        log.info("we are in the controller");
+        log.info(userRegistrationDto.toString());
 
         User user = userRegistrationDto.toUser();
         User registeredUser = userService.register(user);
-
 
         if (registeredUser == null) {
             throw new BadCredentialsException("Cannot register user with such credentials");
