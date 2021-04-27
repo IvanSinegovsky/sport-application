@@ -5,7 +5,6 @@ import org.tevlrp.sportapp.model.User;
 import java.util.List;
 
 public interface UserService {
-
     User register(User user);
 
     List<User> getAll();

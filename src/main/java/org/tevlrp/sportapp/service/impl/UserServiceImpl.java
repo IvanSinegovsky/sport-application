@@ -12,13 +12,11 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
-
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -42,7 +40,7 @@ public class UserServiceImpl implements UserService {
 
         User registeredUser = userRepository.save(user);
 
-        log.info("IN register - user: {} successfully registered", registeredUser);
+        log.info("IN UserServiceImpl register - user: {} successfully registered", registeredUser);
 
         return registeredUser;
     }
@@ -50,15 +48,14 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<User> getAll() {
         List<User> result = userRepository.findAll();
-        log.info("IN getAll - {} users found", result.size());
+        log.info("IN UserServiceImpl getAll - {} users found", result.size());
         return result;
     }
 
     @Override
     public User findByEmail(String email) {
-        log.info("email {}", email);
         User result = userRepository.findByEmail(email);
-        log.info("IN findByUsername - user: {} found by email: {}", result, email);
+        log.info("IN UserServiceImpl findByUsername - user: {} found by email: {}", result, email);
         return result;
     }
 
@@ -67,17 +64,17 @@ public class UserServiceImpl implements UserService {
         User result = userRepository.findById(id).orElse(null);
 
         if (result == null) {
-            log.warn("IN findById - no user found by id: {}", id);
+            log.warn("IN UserServiceImpl findById - no user found by id: {}", id);
             return null;
         }
 
-        log.info("IN findById - user: {} found by id: {}", result);
+        log.info("IN UserServiceImpl findById - user: {} found by id: {}", result.toString(), id);
         return result;
     }
 
     @Override
     public void delete(Long id) {
         userRepository.deleteById(id);
-        log.info("IN delete - user with id: {} successfully deleted");
+        log.info("IN UserServiceImpl delete - user with id: {} successfully deleted", id);
     }
 }

@@ -1,4 +1,4 @@
-package org.tevlrp.sportapp.security.jwt;
+package org.tevlrp.sportapp.exception;
 
 import org.springframework.security.core.AuthenticationException;
 

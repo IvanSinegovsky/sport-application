@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.UserAuthenticationRequestDto;
 import org.tevlrp.sportapp.dto.UserRegistrationDto;
 import org.tevlrp.sportapp.model.User;
+import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.tevlrp.sportapp.service.WorkoutService;
+import org.tevlrp.sportapp.service.impl.WorkoutServiceImpl;
 
 import java.util.HashMap;
 import java.util.Map;
