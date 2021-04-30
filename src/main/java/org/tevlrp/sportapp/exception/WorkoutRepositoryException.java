@@ -1,8 +1,7 @@
 package org.tevlrp.sportapp.exception;
 
 public class WorkoutRepositoryException extends RuntimeException {
-    public WorkoutRepositoryException() {
-    }
+    public WorkoutRepositoryException() { }
 
     public WorkoutRepositoryException(String message) {
         super(message);

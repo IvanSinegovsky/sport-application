@@ -30,7 +30,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public Workout insert(Workout workout) {
         Workout savedWorkout = workoutRepository.insert(workout);
-        log.info("IN WorkoutServiceImpl save() - {} workouts found", savedWorkout);
+        log.info("IN WorkoutServiceImpl insert() - {}", savedWorkout);
         return savedWorkout;
     }
 
@@ -44,14 +44,14 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public void deleteByUserIdAndDate(Long userId, Date date) {
+    public void deleteByUserIdAndDate(Long userId, String date) {
         workoutRepository.deleteByUserIdAndDate(userId, date);
         log.info("IN WorkoutServiceImpl deleteByUserIdAndDate() - workout with userId: {} and Date: {} successfully deleted",
                 userId, date);
     }
 
     @Override
-    public Workout findByUserIdAndDate(Long userId, Date date) {
+    public Workout findByUserIdAndDate(Long userId, String date) {
         Workout workoutByDate = workoutRepository.findByUserIdAndDate(userId, date);
         log.info("IN WorkoutServiceImpl findByUserIdAndDate() - {} workouts found", workoutByDate.toString());
         return workoutByDate;

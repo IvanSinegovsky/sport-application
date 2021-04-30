@@ -5,7 +5,6 @@ import lombok.Data;
 import org.tevlrp.sportapp.model.Status;
 import org.tevlrp.sportapp.model.User;
 
-
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class AdminUserDto {

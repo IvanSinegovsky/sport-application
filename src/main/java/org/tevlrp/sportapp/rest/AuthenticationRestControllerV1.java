@@ -41,7 +41,6 @@ public class AuthenticationRestControllerV1 {
     public ResponseEntity login(@RequestBody UserAuthenticationRequestDto requestDto) {
         try {
             String email = requestDto.getEmail();
-            log.info("email {}", email);
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
             User user = userService.findByEmail(email);
 
@@ -49,7 +48,7 @@ public class AuthenticationRestControllerV1 {
                 throw new UsernameNotFoundException("User with email: " + email + " does not exist");
             }
 
-            String token = jwtTokenProvider.createToken(email, user.getRoles());
+            String token = jwtTokenProvider.createToken(user.getId(), user.getEmail());
 
             Map<Object, Object> response = new HashMap<>();
             response.put("email", email);
@@ -78,5 +77,20 @@ public class AuthenticationRestControllerV1 {
         );
 
         return login(requestDto);
+    }
+
+    //todo beta test method
+    @GetMapping("auth")
+    public ResponseEntity auth(@RequestHeader Map<String, String> headers) {
+        String oldToken = headers.get("authorization");
+        Long userId = Long.valueOf(jwtTokenProvider.getId(oldToken));
+
+        User user = userService.findById(userId);
+        String newToken = jwtTokenProvider.createToken(userId, user.getEmail());
+
+        Map<Object, Object> response = new HashMap<>();
+        response.put("token", newToken);
+
+        return ResponseEntity.ok(response);
     }
 }

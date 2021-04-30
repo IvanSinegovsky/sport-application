@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.WorkoutDto;
 import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
 import org.tevlrp.sportapp.model.workout.Workout;
+import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.WorkoutService;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @CrossOrigin
 @Slf4j
@@ -19,27 +20,43 @@ import java.util.List;
 @RequestMapping("api/v1/calendar/")
 public class WorkoutControllerV1 {
     private WorkoutService workoutService;
+    private JwtTokenProvider jwtTokenProvider;
 
     @Autowired
-    public WorkoutControllerV1(WorkoutService workoutService) {
+    public WorkoutControllerV1(WorkoutService workoutService, JwtTokenProvider jwtTokenProvider) {
         this.workoutService = workoutService;
+        this.jwtTokenProvider = jwtTokenProvider;
     }
 
     @PostMapping("add")
-    public ResponseEntity addWorkout(@RequestBody WorkoutDto workoutDto) {
-        log.info("IN WorkoutsControllerV1 addWorkout() workout:{}", workoutDto);
+    public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers, @RequestBody WorkoutDto workoutDto) {
+        String token = headers.get("authorization");
+        String userId = jwtTokenProvider.getId(token);
+        workoutDto.setUserId(Long.valueOf(userId));
+
         Workout workout = workoutService.insert(workoutDto.toWorkout());
+        log.info("IN WorkoutsControllerV1 addWorkout() inserted and pop:{}", workout);
 
         if (workout == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new workout.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body("Workout was successfully added.");
+        return ResponseEntity.status(HttpStatus.OK).body(workout);
     }
 
-    @GetMapping("workouts/{userId}")
-    public ResponseEntity getAllUserWorkouts(@PathVariable Long userId) {
-        List<Workout> userWorkouts = workoutService.findByUserId(userId);
+    @GetMapping("workouts")
+    public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
+/*
+        for (Map.Entry<String, String> entry : headers.entrySet()) {
+            log.info("MAP KEY: {}, MAP VALUE: {}", entry.getKey(), entry.getValue());
+        }
+*/
+
+        String token = headers.get("authorization");
+        String userId = jwtTokenProvider.getId(token);
+        log.info("TOKEN :{} USERID {}", token, userId);
+
+        List<Workout> userWorkouts = workoutService.findByUserId(Long.valueOf(userId));
 
         if (userWorkouts == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot get users workouts.");
@@ -49,16 +66,23 @@ public class WorkoutControllerV1 {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity deleteByUserIdAndDate(@RequestBody Long userId,
-                                                @RequestBody Date date) {
-        workoutService.deleteByUserIdAndDate(userId, date);
+    public ResponseEntity deleteByUserIdAndDate(@RequestHeader Map<String, String> headers) {
+        String token = headers.get("Authorization");
+        String date = headers.get("date");
+        String userId = jwtTokenProvider.getId(token);
+
+        workoutService.deleteByUserIdAndDate(Long.valueOf(userId), date);
+
         return  ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
     }
 
     @GetMapping("dateWorkout")
-    public ResponseEntity getWorkoutByUserIdAndDate(@RequestBody Long userId,
-                                                    @RequestBody Date date) {
-        Workout workout = workoutService.findByUserIdAndDate(userId, date);
+    public ResponseEntity getWorkoutByUserIdAndDate(@RequestHeader Map<String, String> headers) {
+        String token = headers.get("Authorization");
+        String date = headers.get("date");
+        String userId = jwtTokenProvider.getId(token);
+
+        Workout workout = workoutService.findByUserIdAndDate(Long.valueOf(userId), date);
 
         if (workout == null) {
             return ResponseEntity.status(HttpStatus.NO_CONTENT)

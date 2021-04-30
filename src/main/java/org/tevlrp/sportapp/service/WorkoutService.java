@@ -12,7 +12,7 @@ public interface WorkoutService {
 
     List<Workout> findByUserId(Long userId);
 
-    void deleteByUserIdAndDate(Long userId, Date date);
+    void deleteByUserIdAndDate(Long userId, String date);
 
-    Workout findByUserIdAndDate(Long userId, Date date);
+    Workout findByUserIdAndDate(Long userId, String date);
 }
