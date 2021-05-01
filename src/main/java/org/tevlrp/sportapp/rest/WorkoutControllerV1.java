@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.WorkoutDto;
 import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
+import org.tevlrp.sportapp.model.workout.Exercise;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
@@ -34,8 +35,8 @@ public class WorkoutControllerV1 {
     @PostMapping("add")
     public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers, @RequestBody WorkoutDto workoutDto) {
         String token = headers.get("authorization");
-        String userId = jwtTokenProvider.getId(token);
-        workoutDto.setUserId(Long.valueOf(userId));
+        Long userId = jwtTokenProvider.getId(token);
+        workoutDto.setUserId(userId);
 
         Workout workout = workoutService.insert(workoutDto.toWorkout());
 
@@ -50,7 +51,7 @@ public class WorkoutControllerV1 {
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
-        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
+        Long userId = jwtTokenProvider.getId(token);
 
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
@@ -66,7 +67,7 @@ public class WorkoutControllerV1 {
     public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
                                                 @RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
-        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
+        Long userId = jwtTokenProvider.getId(token);
 
         workoutService.deleteByUserIdAndDate(userId, date);
 
@@ -90,18 +91,11 @@ public class WorkoutControllerV1 {
     }
 
     @GetMapping("workout_classification")
-    public ResponseEntity fff(@RequestParam(value = "classification") ExerciseClassification classification,
-                              @RequestHeader Map<String, String> headers) {
+    public ResponseEntity getGroupedUserWorkouts(@RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
-        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
+        Long userId = jwtTokenProvider.getId(token);
 
-        List<Workout> userWorkouts = workoutService.findByUserId(userId);
-        List<Workout> classifiedWorkouts = userWorkouts.stream().filter(
-                workout -> workout.getExercises().stream().anyMatch(
-                        exercise -> exercise.getExerciseClassification().equals(classification)
-                )
-        ).collect(Collectors.toList());
-
+        Map<ExerciseClassification, Map<String, Double>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
 
         return  ResponseEntity.status(HttpStatus.OK).body(classifiedWorkouts);
     }

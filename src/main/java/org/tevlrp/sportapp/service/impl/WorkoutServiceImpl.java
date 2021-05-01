@@ -3,12 +3,14 @@ package org.tevlrp.sportapp.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tevlrp.sportapp.model.workout.Exercise;
+import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.service.WorkoutService;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -37,8 +39,6 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public List<Workout> findByUserId(Long userId) {
         List<Workout> workouts = workoutRepository.findByUserId(userId);
-        //some logic here with training types
-
         log.info("IN WorkoutServiceImpl findByUser() - {} workouts found", workouts.toString());
         return  workouts;
     }
@@ -55,5 +55,33 @@ public class WorkoutServiceImpl implements WorkoutService {
         Workout workoutByDate = workoutRepository.findByUserIdAndDate(userId, date);
         log.info("IN WorkoutServiceImpl findByUserIdAndDate() - {} workouts found", workoutByDate.toString());
         return workoutByDate;
+    }
+
+    @Override
+    public Map<ExerciseClassification, Map<String, Double>> findClassifiedByUserId(Long userId) {
+        List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
+        Map<ExerciseClassification, Map<String, Double>> groupedUserResults = new HashMap<>();
+
+        //todo сделать через стрим по красоте
+        //это уродство и костыль, просто стримы отказываются корректно работать:(((((
+        for (ExerciseClassification classification : ExerciseClassification.values()) {
+            Map<String, Double> userResults = new HashMap<>(userWorkouts.size());
+
+            for (Workout userWorkout : userWorkouts) {
+                List<Exercise> exercises = userWorkout.getExercises();
+                String key = userWorkout.getDate();
+                for (Exercise exercise : exercises) {
+                    if (exercise.getExerciseClassification().equals(classification)){
+                        Double value = exercise.getWeight();
+
+                        userResults.put(key, value);
+                    }
+                }
+            }
+
+            groupedUserResults.put(classification, userResults);
+        }
+
+        return groupedUserResults;
     }
 }
