@@ -7,12 +7,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.WorkoutDto;
 import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
+import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.WorkoutService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @CrossOrigin
 @Slf4j
@@ -35,7 +38,6 @@ public class WorkoutControllerV1 {
         workoutDto.setUserId(Long.valueOf(userId));
 
         Workout workout = workoutService.insert(workoutDto.toWorkout());
-        log.info("IN WorkoutsControllerV1 addWorkout() inserted and pop:{}", workout);
 
         if (workout == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new workout.");
@@ -44,15 +46,13 @@ public class WorkoutControllerV1 {
         return ResponseEntity.status(HttpStatus.OK).body(workout);
     }
 
+    //todo change userid transfer to query string
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
-/*for (Map.Entry<String, String> entry : headers.entrySet()) {
-            log.info("MAP KEY: {}, MAP VALUE: {}", entry.getKey(), entry.getValue());
-        }*/
         String token = headers.get("authorization");
-        String userId = jwtTokenProvider.getId(token);
+        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
 
-        List<Workout> userWorkouts = workoutService.findByUserId(Long.valueOf(userId));
+        List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
         if (userWorkouts == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot get users workouts.");
@@ -61,30 +61,48 @@ public class WorkoutControllerV1 {
         return ResponseEntity.status(HttpStatus.OK).body(userWorkouts);
     }
 
+    //todo fix bug (method does not delete from db)
     @DeleteMapping("delete")
     public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
                                                 @RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
-        String userId = jwtTokenProvider.getId(token);
+        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
 
-        workoutService.deleteByUserIdAndDate(Long.valueOf(userId), date);
+        workoutService.deleteByUserIdAndDate(userId, date);
 
         return  ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
     }
 
+    //todo change userid transfer to query string
     @GetMapping("dateWorkout")
     public ResponseEntity getWorkoutByUserIdAndDate(@RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
         String date = headers.get("date");
-        String userId = jwtTokenProvider.getId(token);
+        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
 
-        Workout workout = workoutService.findByUserIdAndDate(Long.valueOf(userId), date);
+        Workout workout = workoutService.findByUserIdAndDate(userId, date);
 
         if (workout == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT)
-                    .body("User has no workouts this day.");
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no workouts this day.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(workout);
+    }
+
+    @GetMapping("workout_classification")
+    public ResponseEntity fff(@RequestParam(value = "classification") ExerciseClassification classification,
+                              @RequestHeader Map<String, String> headers) {
+        String token = headers.get("authorization");
+        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
+
+        List<Workout> userWorkouts = workoutService.findByUserId(userId);
+        List<Workout> classifiedWorkouts = userWorkouts.stream().filter(
+                workout -> workout.getExercises().stream().anyMatch(
+                        exercise -> exercise.getExerciseClassification().equals(classification)
+                )
+        ).collect(Collectors.toList());
+
+
+        return  ResponseEntity.status(HttpStatus.OK).body(classifiedWorkouts);
     }
 }
