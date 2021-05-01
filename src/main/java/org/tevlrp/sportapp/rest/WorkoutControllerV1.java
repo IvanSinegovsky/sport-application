@@ -46,15 +46,11 @@ public class WorkoutControllerV1 {
 
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
-/*
-        for (Map.Entry<String, String> entry : headers.entrySet()) {
+/*for (Map.Entry<String, String> entry : headers.entrySet()) {
             log.info("MAP KEY: {}, MAP VALUE: {}", entry.getKey(), entry.getValue());
-        }
-*/
-
+        }*/
         String token = headers.get("authorization");
         String userId = jwtTokenProvider.getId(token);
-        log.info("TOKEN :{} USERID {}", token, userId);
 
         List<Workout> userWorkouts = workoutService.findByUserId(Long.valueOf(userId));
 
@@ -66,9 +62,9 @@ public class WorkoutControllerV1 {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity deleteByUserIdAndDate(@RequestHeader Map<String, String> headers) {
-        String token = headers.get("Authorization");
-        String date = headers.get("date");
+    public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
+                                                @RequestHeader Map<String, String> headers) {
+        String token = headers.get("authorization");
         String userId = jwtTokenProvider.getId(token);
 
         workoutService.deleteByUserIdAndDate(Long.valueOf(userId), date);
@@ -78,7 +74,7 @@ public class WorkoutControllerV1 {
 
     @GetMapping("dateWorkout")
     public ResponseEntity getWorkoutByUserIdAndDate(@RequestHeader Map<String, String> headers) {
-        String token = headers.get("Authorization");
+        String token = headers.get("authorization");
         String date = headers.get("date");
         String userId = jwtTokenProvider.getId(token);
 
