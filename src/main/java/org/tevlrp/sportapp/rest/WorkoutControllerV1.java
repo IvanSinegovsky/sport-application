@@ -90,7 +90,7 @@ public class WorkoutControllerV1 {
         return ResponseEntity.status(HttpStatus.OK).body(workout);
     }
 
-    @GetMapping("workout_classification")
+    @GetMapping("classified_workouts")
     public ResponseEntity getGroupedUserWorkouts(@RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
         Long userId = jwtTokenProvider.getId(token);
