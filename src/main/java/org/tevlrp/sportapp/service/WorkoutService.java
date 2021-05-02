@@ -19,5 +19,5 @@ public interface WorkoutService {
 
     Workout findByUserIdAndDate(Long userId, String date);
 
-    Map<ExerciseClassification, Map<String, Double>> findClassifiedByUserId(Long userId);
+    List<List<String>> findClassifiedByUserId(Long userId);
 }

@@ -58,30 +58,37 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public Map<ExerciseClassification, Map<String, Double>> findClassifiedByUserId(Long userId) {
+    public List<List<String>> findClassifiedByUserId(Long userId) {
         List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
-        Map<ExerciseClassification, Map<String, Double>> groupedUserResults = new HashMap<>();
 
         //todo сделать через стрим по красоте
         //это уродство и костыль, просто стримы отказываются корректно работать:(((((
+
+        List<List<String>> datesAndClassifiedWorkouts = new ArrayList<>(4);
+
+        List<String> dates = new ArrayList<>(userWorkouts.size());
+        Set<String> datesSet = new HashSet<>();
+
         for (ExerciseClassification classification : ExerciseClassification.values()) {
-            Map<String, Double> userResults = new HashMap<>(userWorkouts.size());
+            List<String> userResults = new ArrayList<>(userWorkouts.size());
 
             for (Workout userWorkout : userWorkouts) {
+                datesSet.add(userWorkout.getDate());
                 List<Exercise> exercises = userWorkout.getExercises();
-                String key = userWorkout.getDate();
+
                 for (Exercise exercise : exercises) {
                     if (exercise.getExerciseClassification().equals(classification)){
-                        Double value = exercise.getWeight();
-
-                        userResults.put(key, value);
+                        userResults.add(String.valueOf(exercise.getWeight()));
                     }
                 }
             }
 
-            groupedUserResults.put(classification, userResults);
+            datesAndClassifiedWorkouts.add(userResults);
         }
 
-        return groupedUserResults;
+        dates.addAll(datesSet);
+        datesAndClassifiedWorkouts.add(0, dates);
+
+        return datesAndClassifiedWorkouts;
     }
 }

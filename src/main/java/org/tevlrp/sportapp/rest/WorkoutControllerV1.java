@@ -95,7 +95,7 @@ public class WorkoutControllerV1 {
         String token = headers.get("authorization");
         Long userId = jwtTokenProvider.getId(token);
 
-        Map<ExerciseClassification, Map<String, Double>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
+        List<List<String>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
 
         return  ResponseEntity.status(HttpStatus.OK).body(classifiedWorkouts);
     }
