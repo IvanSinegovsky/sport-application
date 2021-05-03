@@ -5,16 +5,14 @@ import lombok.NoArgsConstructor;
 import org.tevlrp.sportapp.model.workout.Exercise;
 import org.tevlrp.sportapp.model.workout.Workout;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Data
 @NoArgsConstructor
 public class WorkoutDto {
     private Long userId;
-    //yyyy-MM-dd
-    private String date;
+    private LocalDate date;
     private List<Exercise> exercises;
 
     public WorkoutDto(Workout workout) {

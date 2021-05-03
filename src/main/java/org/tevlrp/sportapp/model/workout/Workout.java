@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Document(collection = "workouts")
@@ -12,7 +13,6 @@ public class Workout {
     @Id
     private String id;
     private Long userId;
-    //yyyy-MM-dd
-    private String date;
+    private LocalDate date;
     private List<Exercise> exercises;
 }

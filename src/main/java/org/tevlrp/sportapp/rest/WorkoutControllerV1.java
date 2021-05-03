@@ -7,16 +7,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.WorkoutDto;
 import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
-import org.tevlrp.sportapp.model.workout.Exercise;
-import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.WorkoutService;
 
-import java.util.ArrayList;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @CrossOrigin
 @Slf4j
@@ -33,7 +30,8 @@ public class WorkoutControllerV1 {
     }
 
     @PostMapping("add")
-    public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers, @RequestBody WorkoutDto workoutDto) {
+    public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers,
+                                     @RequestBody WorkoutDto workoutDto) {
         String token = headers.get("authorization");
         Long userId = jwtTokenProvider.getId(token);
         workoutDto.setUserId(userId);
@@ -62,9 +60,8 @@ public class WorkoutControllerV1 {
         return ResponseEntity.status(HttpStatus.OK).body(userWorkouts);
     }
 
-    //todo fix bug (method does not delete from db)
     @DeleteMapping("delete")
-    public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
+    public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
                                                 @RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
         Long userId = jwtTokenProvider.getId(token);
@@ -74,11 +71,10 @@ public class WorkoutControllerV1 {
         return  ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
     }
 
-    //todo change userid transfer to query string
-    @GetMapping("dateWorkout")
-    public ResponseEntity getWorkoutByUserIdAndDate(@RequestHeader Map<String, String> headers) {
+    @GetMapping("workout")
+    public ResponseEntity getWorkoutByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
+                                                    @RequestHeader Map<String, String> headers) {
         String token = headers.get("authorization");
-        String date = headers.get("date");
         Long userId = Long.valueOf(jwtTokenProvider.getId(token));
 
         Workout workout = workoutService.findByUserIdAndDate(userId, date);

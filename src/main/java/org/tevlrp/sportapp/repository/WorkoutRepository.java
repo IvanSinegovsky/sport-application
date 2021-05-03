@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 import org.tevlrp.sportapp.model.workout.Workout;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 
@@ -11,7 +12,7 @@ import java.util.List;
 public interface WorkoutRepository extends MongoRepository<Workout, String> {
     List<Workout> findByUserId(Long userId);
 
-    void deleteByUserIdAndDate(Long userId, String date);
+    void deleteByUserIdAndDate(Long userId, LocalDate date);
 
-    Workout findByUserIdAndDate(Long userId, String date);
+    Workout findByUserIdAndDate(Long userId, LocalDate date);
 }
