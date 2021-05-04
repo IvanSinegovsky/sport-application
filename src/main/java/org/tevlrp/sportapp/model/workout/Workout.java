@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -12,7 +13,12 @@ import java.util.List;
 public class Workout {
     @Id
     private String id;
+
+    @NotNull
     private Long userId;
+
+    @NotNull
     private LocalDate date;
+    //todo length
     private List<Exercise> exercises;
 }

@@ -1,10 +1,10 @@
 package org.tevlrp.sportapp.security.jwt;
 
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.tevlrp.sportapp.model.Role;
 import org.tevlrp.sportapp.model.Status;
 import org.tevlrp.sportapp.model.User;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.ArrayList;
 import java.util.List;
