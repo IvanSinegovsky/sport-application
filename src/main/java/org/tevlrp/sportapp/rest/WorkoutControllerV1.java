@@ -32,8 +32,7 @@ public class WorkoutControllerV1 {
     @PostMapping("add")
     public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers,
                                      @RequestBody WorkoutDto workoutDto) {
-        String token = headers.get("authorization");
-        Long userId = jwtTokenProvider.getId(token);
+        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         workoutDto.setUserId(userId);
 
         Workout workout = workoutService.insert(workoutDto.toWorkout());
@@ -48,8 +47,7 @@ public class WorkoutControllerV1 {
     //todo change userid transfer to query string
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
-        String token = headers.get("authorization");
-        Long userId = jwtTokenProvider.getId(token);
+        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
@@ -61,10 +59,9 @@ public class WorkoutControllerV1 {
     }
 
     @DeleteMapping("delete")
-    public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
+    public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
                                                 @RequestHeader Map<String, String> headers) {
-        String token = headers.get("authorization");
-        Long userId = jwtTokenProvider.getId(token);
+        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         workoutService.deleteByUserIdAndDate(userId, date);
 
@@ -74,8 +71,7 @@ public class WorkoutControllerV1 {
     @GetMapping("workout")
     public ResponseEntity getWorkoutByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
                                                     @RequestHeader Map<String, String> headers) {
-        String token = headers.get("authorization");
-        Long userId = Long.valueOf(jwtTokenProvider.getId(token));
+        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         Workout workout = workoutService.findByUserIdAndDate(userId, date);
 
@@ -88,8 +84,7 @@ public class WorkoutControllerV1 {
 
     @GetMapping("classified_workouts")
     public ResponseEntity getGroupedUserWorkouts(@RequestHeader Map<String, String> headers) {
-        String token = headers.get("authorization");
-        Long userId = jwtTokenProvider.getId(token);
+        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         List<List<String>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
 

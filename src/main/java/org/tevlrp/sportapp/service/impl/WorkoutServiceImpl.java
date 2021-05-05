@@ -46,8 +46,13 @@ public class WorkoutServiceImpl implements WorkoutService {
     }
 
     @Override
-    public void deleteByUserIdAndDate(Long userId, LocalDate date) {
-        workoutRepository.deleteByUserIdAndDate(userId, date);
+    public void deleteByUserIdAndDate(Long userId, String date) {
+        Integer year = Integer.parseInt(date.substring(0, 4));
+        Integer month = Integer.parseInt(date.substring(5, 7));
+        Integer day = Integer.parseInt(date.substring(8, 10));
+
+        LocalDate localDate = LocalDate.of(year,month, day);
+        workoutRepository.deleteByUserIdAndDate(userId, localDate);
         log.info("IN WorkoutServiceImpl deleteByUserIdAndDate() - workout with userId: {} and Date: {} successfully deleted",
                 userId, date);
     }
