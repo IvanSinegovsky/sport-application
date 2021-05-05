@@ -47,6 +47,8 @@ public class WorkoutControllerV1 {
     //todo change userid transfer to query string
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
+        headers.forEach((k,v)->log.info("Key : " + k + " Value : " + v));
+
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
