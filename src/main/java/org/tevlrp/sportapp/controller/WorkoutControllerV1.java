@@ -34,9 +34,7 @@ public class WorkoutControllerV1 {
                                      @RequestBody WorkoutDto workoutDto) {
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         workoutDto.setUserId(userId);
-
         Workout workout = workoutService.insert(workoutDto.toWorkout());
-        log.info("ATTENTION {}",workout.toString());
 
         if (workout == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new workout.");
