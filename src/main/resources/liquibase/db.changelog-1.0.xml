@@ -88,4 +88,34 @@
             <column name="name" value="ROLE_ADMIN"/>
         </insert>
     </changeSet>
+
+    <changeSet id="1.0.6" author="tevlrp">
+        <createTable tableName="goals">
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="exercise_classification" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="weight" type="SMALLINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.7" author="tevlrp">
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="goals"
+                                 constraintName="fk_user_id_goals"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
 </databaseChangeLog>
