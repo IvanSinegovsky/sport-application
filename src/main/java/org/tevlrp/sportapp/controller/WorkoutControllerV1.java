@@ -1,4 +1,4 @@
-package org.tevlrp.sportapp.rest;
+package org.tevlrp.sportapp.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

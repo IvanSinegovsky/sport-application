@@ -1,4 +1,4 @@
-package org.tevlrp.sportapp.rest;
+package org.tevlrp.sportapp.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,12 +13,11 @@ import org.tevlrp.sportapp.service.UserService;
 
 @RestController
 @RequestMapping(value = "/api/v1/admin/")
-public class AdminRestControllerV1 {
-
+public class AdminControllerV1 {
     private final UserService userService;
 
     @Autowired
-    public AdminRestControllerV1(UserService userService) {
+    public AdminControllerV1(UserService userService) {
         this.userService = userService;
     }
 

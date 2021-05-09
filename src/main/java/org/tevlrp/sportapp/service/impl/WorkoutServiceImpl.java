@@ -42,7 +42,7 @@ public class WorkoutServiceImpl implements WorkoutService {
     public List<Workout> findByUserId(Long userId) {
         List<Workout> workouts = workoutRepository.findByUserId(userId);
         log.info("IN WorkoutServiceImpl findByUser() - {} workouts found", workouts.toString());
-        return  workouts;
+        return workouts;
     }
 
     @Override
