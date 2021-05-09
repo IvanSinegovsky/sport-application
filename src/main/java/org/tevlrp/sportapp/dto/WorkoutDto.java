@@ -14,12 +14,14 @@ public class WorkoutDto {
     private Long userId;
     private LocalDate date;
     private List<Exercise> exercises;
+    private String description;
 
     public WorkoutDto(Workout workout) {
         WorkoutDto workoutDto = new WorkoutDto();
         workoutDto.setUserId(workout.getUserId());
         workoutDto.setDate(workout.getDate());
         workoutDto.setExercises(workout.getExercises());
+        workoutDto.setDescription(workout.getDescription());
     }
 
     public Workout toWorkout() {
@@ -27,6 +29,7 @@ public class WorkoutDto {
         workout.setUserId(userId);
         workout.setDate(date);
         workout.setExercises(exercises);
+        workout.setDescription(description);
 
         return workout;
     }

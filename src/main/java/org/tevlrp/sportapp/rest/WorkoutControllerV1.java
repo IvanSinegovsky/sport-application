@@ -36,6 +36,7 @@ public class WorkoutControllerV1 {
         workoutDto.setUserId(userId);
 
         Workout workout = workoutService.insert(workoutDto.toWorkout());
+        log.info("ATTENTION {}",workout.toString());
 
         if (workout == null) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new workout.");
@@ -47,8 +48,6 @@ public class WorkoutControllerV1 {
     //todo change userid transfer to query string
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
-        headers.forEach((k,v)->log.info("Key : " + k + " Value : " + v));
-
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
 
         List<Workout> userWorkouts = workoutService.findByUserId(userId);

@@ -21,4 +21,6 @@ public class Workout {
     private LocalDate date;
     //todo length
     private List<Exercise> exercises;
+
+    private String description;
 }
