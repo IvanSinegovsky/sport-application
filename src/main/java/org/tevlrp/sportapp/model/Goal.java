@@ -22,4 +22,6 @@ public class Goal {
 
     @NotNull
     private Double weight;
+
+
 }

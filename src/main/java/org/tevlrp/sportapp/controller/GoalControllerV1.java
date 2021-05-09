@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.tevlrp.sportapp.dto.GoalFulfillingDto;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.GoalService;
@@ -28,8 +29,8 @@ public class GoalControllerV1 {
     @GetMapping("goals")
     public ResponseEntity getAllUserGoals(@RequestHeader Map<String, String> headers) {
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
-        List<Goal> userGoals = goalService.getGoalsFulfillmentPercentsByUserId(userId);
-        return ResponseEntity.ok(userGoals);
+        List<GoalFulfillingDto> goalsFulfilling = goalService.getGoalsFulfillmentPercentsByUserId(userId);
+        return ResponseEntity.ok(goalsFulfilling);
     }
 
 }
