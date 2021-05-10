@@ -19,13 +19,18 @@ public class GoalFulfillingDto {
     private Long userId;
     private ExerciseClassification exerciseClassification;
 
-    @JsonIgnore
     private Double weight;
     private Double fulfillingInPercents;
 
     public GoalFulfillingDto(ExerciseClassification exerciseClassification, Double fulfillingInPercents) {
         this.exerciseClassification = exerciseClassification;
         this.fulfillingInPercents = fulfillingInPercents;
+    }
+
+    public GoalFulfillingDto(Goal goal) {
+        this.userId = goal.getUserId();
+        this.exerciseClassification = goal.getExerciseClassification();
+        this.weight = goal.getWeight();
     }
 
     public Goal toGoal() {

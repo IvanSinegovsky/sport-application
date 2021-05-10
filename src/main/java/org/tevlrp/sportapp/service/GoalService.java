@@ -5,9 +5,10 @@ import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GoalService {
-    Goal add(Goal exercise);
+    Optional<GoalFulfillingDto> add(Goal exercise);
 
     List<GoalFulfillingDto> getGoalsFulfillmentPercentsByUserId(Long userId);
 

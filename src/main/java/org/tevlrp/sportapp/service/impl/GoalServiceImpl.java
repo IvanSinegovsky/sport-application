@@ -28,10 +28,32 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public Goal add(Goal goal) {
+    public Optional<GoalFulfillingDto> add(Goal goal) {
         Goal savedGoal = goalRepository.save(goal);
-        log.info("IN GoalServiceImpl add() goal: {} was successfully added", savedGoal);
-        return savedGoal;
+        List<Workout> userWorkouts = workoutRepository.findByUserId(savedGoal.getUserId());
+
+        List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+
+        Map<ExerciseClassification, Double> classificationToWeight = allUserExercises.stream().collect(
+                Collectors.groupingBy(Exercise::getExerciseClassification,
+                        Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
+                                Optional::get))
+        ).values()
+                .stream().filter(exercise -> exercise.getExerciseClassification().equals(savedGoal.getExerciseClassification()))
+                .collect(Collectors.toMap(Exercise::getExerciseClassification, Exercise::getWeight));
+
+        GoalFulfillingDto fulfilledInPercents = new GoalFulfillingDto(savedGoal);
+
+        for (Map.Entry<ExerciseClassification, Double> entry : classificationToWeight.entrySet()) {
+                if (entry.getKey().equals(savedGoal.getExerciseClassification())) {
+                    fulfilledInPercents.setFulfillingInPercents(entry.getValue() / savedGoal.getWeight());
+
+                    return Optional.of(fulfilledInPercents);
+                }
+        }
+
+        return Optional.empty();
     }
 
 
@@ -62,7 +84,6 @@ public class GoalServiceImpl implements GoalService {
             }
         }
 
-        System.out.println(fulfilledInPercents.toString());
         return fulfilledInPercents;
     }
 

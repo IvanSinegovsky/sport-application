@@ -16,10 +16,8 @@ public class Goal {
 
     private Long userId;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     private ExerciseClassification exerciseClassification;
 
-    @NotNull
     private Double weight;
 }
