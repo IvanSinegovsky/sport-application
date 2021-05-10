@@ -1,17 +1,25 @@
 package org.tevlrp.sportapp.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class GoalFulfillingDto {
+
+    @JsonIgnore
     private Long userId;
     private ExerciseClassification exerciseClassification;
+
+    @JsonIgnore
     private Double weight;
     private Double fulfillingInPercents;
 

@@ -51,19 +51,18 @@ public class GoalServiceImpl implements GoalService {
 
         classificationToWeight.forEach((key, value) -> log.info(key + ":" + value));
 
-        //comparing
-
         List<GoalFulfillingDto> fulfilledInPercents = new ArrayList<>(userGoals.size());
 
         for (Map.Entry<ExerciseClassification, Double> entry : classificationToWeight.entrySet()) {
             for (Goal goal : userGoals) {
-                if (entry.getKey().equals(goal)) {
+                if (entry.getKey().equals(goal.getExerciseClassification())) {
                     fulfilledInPercents.add(new GoalFulfillingDto(goal.getExerciseClassification(),
                             entry.getValue() / goal.getWeight()));
                 }
             }
         }
 
+        System.out.println(fulfilledInPercents.toString());
         return fulfilledInPercents;
     }
 

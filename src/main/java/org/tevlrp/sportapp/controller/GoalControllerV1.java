@@ -31,7 +31,7 @@ public class GoalControllerV1 {
     }
 
     @GetMapping("goals")
-    public ResponseEntity getAllUserGoals(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity getUserGoalsFulfillments(@RequestHeader Map<String, String> headers) {
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         List<GoalFulfillingDto> goalsFulfilling = goalService.getGoalsFulfillmentPercentsByUserId(userId);
         return ResponseEntity.ok(goalsFulfilling);
