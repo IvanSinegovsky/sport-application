@@ -4,7 +4,6 @@ import lombok.Data;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "goals")
@@ -16,7 +15,8 @@ public class Goal {
 
     private Long userId;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exercises_classifications", referencedColumnName = "name")
     private ExerciseClassification exerciseClassification;
 
     private Double weight;

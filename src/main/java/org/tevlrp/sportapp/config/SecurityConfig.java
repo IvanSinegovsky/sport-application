@@ -19,6 +19,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private static final String LOGIN_ENDPOINT = "/api/v1/auth/**";
     private static final String CALENDAR_ENDPOINT = "/api/v1/calendar/**";
     private static final String GOAL_ENDPOINT = "/api/v1/goal/**";
+    private static final String EXERCISE_CLASSIFICATION_ENDPOINT = "/api/v1/classification/**";
 
     @Autowired
     public SecurityConfig(JwtTokenProvider jwtTokenProvider) {
@@ -43,6 +44,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers(CALENDAR_ENDPOINT).permitAll()
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
                 .antMatchers(GOAL_ENDPOINT).permitAll()
+                .antMatchers(EXERCISE_CLASSIFICATION_ENDPOINT).permitAll()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

@@ -19,6 +19,7 @@ public class Workout {
 
     @NotNull
     private LocalDate date;
+
     //todo length
     private List<Exercise> exercises;
 

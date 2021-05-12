@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import org.tevlrp.sportapp.model.workout.Exercise;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
+import org.tevlrp.sportapp.repository.ExerciseClassificationRepository;
 import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.service.WorkoutService;
 
@@ -13,11 +14,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
 public class WorkoutServiceImpl implements WorkoutService {
     private WorkoutRepository workoutRepository;
+    private ExerciseClassificationRepository exerciseClassificationRepository;
 
     @Autowired
     public WorkoutServiceImpl(WorkoutRepository workoutRepository) {
@@ -80,7 +83,11 @@ public class WorkoutServiceImpl implements WorkoutService {
         //todo сделать через стрим по красоте
         //todo это уродство
 
-        for (ExerciseClassification classification : ExerciseClassification.values()) {
+        List<String> exercisesClassifications = exerciseClassificationRepository.findAll().stream()
+                .map(ExerciseClassification::getName)
+                .collect(Collectors.toList());
+
+        for (String classification : exercisesClassifications) {
             List<String> userResults = new ArrayList<>(userWorkouts.size());
 
             for (Workout userWorkout : userWorkouts) {

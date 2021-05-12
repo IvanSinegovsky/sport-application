@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 import org.tevlrp.sportapp.dto.GoalFulfillingDto;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.Exercise;
-import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.repository.GoalRepository;
 import org.tevlrp.sportapp.repository.WorkoutRepository;
@@ -35,7 +34,7 @@ public class GoalServiceImpl implements GoalService {
         List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
                 .flatMap(Collection::stream).collect(Collectors.toList());
 
-        Map<ExerciseClassification, Double> classificationToWeight = allUserExercises.stream().collect(
+        Map<String, Double> classificationToWeight = allUserExercises.stream().collect(
                 Collectors.groupingBy(Exercise::getExerciseClassification,
                         Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
                                 Optional::get))
@@ -45,7 +44,7 @@ public class GoalServiceImpl implements GoalService {
 
         GoalFulfillingDto fulfilledInPercents = new GoalFulfillingDto(savedGoal);
 
-        for (Map.Entry<ExerciseClassification, Double> entry : classificationToWeight.entrySet()) {
+        for (Map.Entry<String, Double> entry : classificationToWeight.entrySet()) {
                 if (entry.getKey().equals(savedGoal.getExerciseClassification())) {
                     fulfilledInPercents.setFulfillingInPercents(entry.getValue() / savedGoal.getWeight());
 
@@ -65,7 +64,7 @@ public class GoalServiceImpl implements GoalService {
         List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
                 .flatMap(Collection::stream).collect(Collectors.toList());
 
-        Map<ExerciseClassification, Double> classificationToWeight = allUserExercises.stream().collect(
+        Map<String, Double> classificationToWeight = allUserExercises.stream().collect(
                 Collectors.groupingBy(Exercise::getExerciseClassification,
                         Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
                                 Optional::get))
@@ -75,7 +74,7 @@ public class GoalServiceImpl implements GoalService {
 
         List<GoalFulfillingDto> fulfilledInPercents = new ArrayList<>(userGoals.size());
 
-        for (Map.Entry<ExerciseClassification, Double> entry : classificationToWeight.entrySet()) {
+        for (Map.Entry<String, Double> entry : classificationToWeight.entrySet()) {
             for (Goal goal : userGoals) {
                 if (entry.getKey().equals(goal.getExerciseClassification())) {
                     fulfilledInPercents.add(new GoalFulfillingDto(goal.getExerciseClassification(),
@@ -88,7 +87,7 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public void deleteByUserIdAndExerciseClassification(Long userId, ExerciseClassification exerciseClassification) {
+    public void deleteByUserIdAndExerciseClassification(Long userId, String exerciseClassification) {
 
     }
 }

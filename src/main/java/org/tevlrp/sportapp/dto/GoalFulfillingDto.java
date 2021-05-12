@@ -7,9 +7,6 @@ import lombok.NoArgsConstructor;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
