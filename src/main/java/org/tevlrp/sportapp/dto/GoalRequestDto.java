@@ -14,32 +14,24 @@ public class GoalRequestDto {
 
     @JsonIgnore
     private Long userId;
-    private ExerciseClassification exerciseClassification;
+    private String exerciseClassificationName;
     private Double weight;
 
     public GoalRequestDto(ExerciseClassification exerciseClassification) {
-        this.exerciseClassification = exerciseClassification;
+        this.exerciseClassificationName = exerciseClassification.getName();
     }
 
     public GoalRequestDto(Goal goal) {
         this.userId = goal.getUserId();
-        this.exerciseClassification = goal.getExerciseClassification();
+        this.exerciseClassificationName = goal.getExerciseClassification().getName();
         this.weight = goal.getWeight();
     }
 
-    public Goal toGoal() {
-        Goal goal = new Goal();
-        goal.setUserId(userId);
-        goal.setExerciseClassification(exerciseClassification);
-        goal.setWeight(weight);
-
-        return goal;
-    }
 
     public GoalRequestDto toGoalFulfillingDto(Goal goal) {
         GoalRequestDto goalRequestDto = new GoalRequestDto();
         goalRequestDto.setUserId(goal.getUserId());
-        goalRequestDto.setExerciseClassification(goal.getExerciseClassification());
+        goalRequestDto.setExerciseClassificationName(goal.getExerciseClassification().getName());
         goalRequestDto.setWeight(goal.getWeight());
 
         return goalRequestDto;

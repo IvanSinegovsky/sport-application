@@ -41,7 +41,7 @@ public class GoalControllerV1 {
         log.info(goalRequestDto.toString());
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         goalRequestDto.setUserId(userId);
-        Optional<GoalResponseDto> goalDtoOptional = goalService.add(goalRequestDto.toGoal());
+        Optional<GoalResponseDto> goalDtoOptional = goalService.add(goalRequestDto);
 
         if (goalDtoOptional.isEmpty()) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new goal.");

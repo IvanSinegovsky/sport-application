@@ -3,11 +3,13 @@ package org.tevlrp.sportapp.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.tevlrp.sportapp.dto.GoalRequestDto;
 import org.tevlrp.sportapp.dto.GoalResponseDto;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.Exercise;
 import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
+import org.tevlrp.sportapp.repository.ExerciseClassificationRepository;
 import org.tevlrp.sportapp.repository.GoalRepository;
 import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.service.GoalService;
@@ -20,17 +22,30 @@ import java.util.stream.Collectors;
 public class GoalServiceImpl implements GoalService {
     private GoalRepository goalRepository;
     private WorkoutRepository workoutRepository;
+    private ExerciseClassificationRepository exerciseClassificationRepository;
 
     @Autowired
-    public GoalServiceImpl(GoalRepository goalRepository, WorkoutRepository workoutRepository) {
+    public GoalServiceImpl(GoalRepository goalRepository,
+                           WorkoutRepository workoutRepository,
+                           ExerciseClassificationRepository exerciseClassificationRepository) {
         this.goalRepository = goalRepository;
         this.workoutRepository = workoutRepository;
+        this.exerciseClassificationRepository = exerciseClassificationRepository;
     }
 
     @Override
-    public Optional<GoalResponseDto> add(Goal goal) {
-        Goal savedGoal = goalRepository.save(goal);
-        List<Exercise> allUserExercises = getAllUserExercises(goal.getUserId());
+    public Optional<GoalResponseDto> add(GoalRequestDto goalRequestDto) {
+        ExerciseClassification goalToAddExerciseClassification = exerciseClassificationRepository
+                .findByName(goalRequestDto.getExerciseClassificationName());
+
+        System.out.println(goalRequestDto.getExerciseClassificationName());
+
+        Goal goalToAdd = new Goal(goalRequestDto.getUserId(),
+                goalToAddExerciseClassification,
+                goalRequestDto.getWeight());
+
+        Goal savedGoal = goalRepository.save(goalToAdd);
+        List<Exercise> allUserExercises = getAllUserExercises(goalToAdd.getUserId());
 
         Map<String, Double> classificationToWeight = allUserExercisesClassificationsMaxWeights(allUserExercises);
         Map<String, Double> currentGoalClassificationToWeight = classificationToWeight.entrySet().stream()

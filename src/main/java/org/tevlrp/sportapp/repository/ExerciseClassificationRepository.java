@@ -6,4 +6,5 @@ import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import java.util.List;
 
 public interface ExerciseClassificationRepository extends JpaRepository<ExerciseClassification, Long> {
+    ExerciseClassification findByName(String name);
 }
