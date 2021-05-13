@@ -3,9 +3,10 @@ package org.tevlrp.sportapp.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.tevlrp.sportapp.dto.GoalFulfillingDto;
+import org.tevlrp.sportapp.dto.GoalResponseDto;
 import org.tevlrp.sportapp.model.Goal;
 import org.tevlrp.sportapp.model.workout.Exercise;
+import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 import org.tevlrp.sportapp.model.workout.Workout;
 import org.tevlrp.sportapp.repository.GoalRepository;
 import org.tevlrp.sportapp.repository.WorkoutRepository;
@@ -27,28 +28,23 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public Optional<GoalFulfillingDto> add(Goal goal) {
+    public Optional<GoalResponseDto> add(Goal goal) {
         Goal savedGoal = goalRepository.save(goal);
-        List<Workout> userWorkouts = workoutRepository.findByUserId(savedGoal.getUserId());
+        List<Exercise> allUserExercises = getAllUserExercises(goal.getUserId());
 
-        List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
-                .flatMap(Collection::stream).collect(Collectors.toList());
+        Map<String, Double> classificationToWeight = allUserExercisesClassificationsMaxWeights(allUserExercises);
+        Map<String, Double> currentGoalClassificationToWeight = classificationToWeight.entrySet().stream()
+                .filter(map -> map.getKey().equals(savedGoal.getExerciseClassification().getName()))
+                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
 
-        Map<String, Double> classificationToWeight = allUserExercises.stream().collect(
-                Collectors.groupingBy(Exercise::getExerciseClassification,
-                        Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
-                                Optional::get))
-        ).values()
-                .stream().filter(exercise -> exercise.getExerciseClassification().equals(savedGoal.getExerciseClassification()))
-                .collect(Collectors.toMap(Exercise::getExerciseClassification, Exercise::getWeight));
+        for (Map.Entry<String, Double> entry : currentGoalClassificationToWeight.entrySet()) {
+                if (entry.getKey().equals(savedGoal.getExerciseClassification().getName())) {
+                    GoalResponseDto goalResponseDto = new GoalResponseDto(
+                            savedGoal.getExerciseClassification().getName(),
+                            percentsFulfilling(entry.getValue(), savedGoal.getWeight())
+                    );
 
-        GoalFulfillingDto fulfilledInPercents = new GoalFulfillingDto(savedGoal);
-
-        for (Map.Entry<String, Double> entry : classificationToWeight.entrySet()) {
-                if (entry.getKey().equals(savedGoal.getExerciseClassification())) {
-                    fulfilledInPercents.setFulfillingInPercents(entry.getValue() / savedGoal.getWeight());
-
-                    return Optional.of(fulfilledInPercents);
+                    return Optional.of(goalResponseDto);
                 }
         }
 
@@ -57,37 +53,54 @@ public class GoalServiceImpl implements GoalService {
 
 
     @Override
-    public List<GoalFulfillingDto> getGoalsFulfillmentPercentsByUserId(Long userId) {
+    public List<GoalResponseDto> getGoalsFulfillmentPercentsByUserId(Long userId) {
         List<Goal> userGoals = goalRepository.findAllByUserId(userId);
-        List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
+        List<Exercise> allUserExercises = getAllUserExercises(userId);
+        Map<String, Double> classificationNameToWeight = allUserExercisesClassificationsMaxWeights(allUserExercises);
+        List<GoalResponseDto> goalResponseDtos = new ArrayList<>();
 
-        List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
-                .flatMap(Collection::stream).collect(Collectors.toList());
+        classificationNameToWeight.forEach((key, value) -> log.info(key + ":" + value));
 
-        Map<String, Double> classificationToWeight = allUserExercises.stream().collect(
-                Collectors.groupingBy(Exercise::getExerciseClassification,
-                        Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
-                                Optional::get))
-        ).values().stream().collect(Collectors.toMap(Exercise::getExerciseClassification, Exercise::getWeight));
-
-        classificationToWeight.forEach((key, value) -> log.info(key + ":" + value));
-
-        List<GoalFulfillingDto> fulfilledInPercents = new ArrayList<>(userGoals.size());
-
-        for (Map.Entry<String, Double> entry : classificationToWeight.entrySet()) {
+        for (Map.Entry<String, Double> entry : classificationNameToWeight.entrySet()) {
             for (Goal goal : userGoals) {
-                if (entry.getKey().equals(goal.getExerciseClassification())) {
-                    fulfilledInPercents.add(new GoalFulfillingDto(goal.getExerciseClassification(),
-                            entry.getValue() / goal.getWeight()));
+                log.info("GOALS {}", goal.toString());
+                if (entry.getKey().equals(goal.getExerciseClassification().getName())) {
+                    goalResponseDtos.add(new GoalResponseDto(
+                            goal.getExerciseClassification().getName(),
+                            percentsFulfilling(entry.getValue(), goal.getWeight())
+                    ));
                 }
             }
         }
+        log.info("FULFILLED {}", goalResponseDtos);
 
-        return fulfilledInPercents;
+        return goalResponseDtos;
     }
 
     @Override
-    public void deleteByUserIdAndExerciseClassification(Long userId, String exerciseClassification) {
+    public void deleteByUserIdAndExerciseClassification(Long userId, ExerciseClassification exerciseClassification) {
 
+    }
+
+    private List<Exercise> getAllUserExercises(Long userId) {
+        List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
+        List<Exercise> allUserExercises = userWorkouts.stream().map(Workout::getExercises)
+                .flatMap(Collection::stream).collect(Collectors.toList());
+
+        return allUserExercises;
+    }
+
+    private Map<String, Double> allUserExercisesClassificationsMaxWeights(List<Exercise> allUserExercises) {
+        Map<String, Double> exerciseClassificationToWeight = allUserExercises.stream().collect(
+                Collectors.groupingBy(Exercise::getExerciseClassificationName,
+                        Collectors.collectingAndThen(Collectors.maxBy(Comparator.comparing(Exercise::getWeight)),
+                                Optional::get))
+        ).values().stream().collect(Collectors.toMap(Exercise::getExerciseClassificationName, Exercise::getWeight));
+
+        return exerciseClassificationToWeight;
+    }
+
+    private Double percentsFulfilling(Double currentWeight, Double expectedWeight) {
+        return currentWeight / expectedWeight * 100;
     }
 }

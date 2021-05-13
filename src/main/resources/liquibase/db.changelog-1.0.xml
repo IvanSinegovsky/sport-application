@@ -99,7 +99,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="exercise_classification" type="VARCHAR(50)">
+            <column name="exercise_classification_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
 
@@ -120,7 +120,7 @@
     </changeSet>
 
     <changeSet id="1.0.8" author="tevlrp">
-        <createTable tableName="exercise_classifications">
+        <createTable tableName="exercises_classifications">
             <column name="id" type="BIGINT" autoIncrement="true">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
@@ -129,5 +129,15 @@
                 <constraints nullable="false" unique="true"/>
             </column>
         </createTable>
+    </changeSet>
+
+    <changeSet id="1.0.9" author="tevlrp">
+        <addForeignKeyConstraint baseColumnNames="exercise_classification_id"
+                                 baseTableName="goals"
+                                 constraintName="fk_exercise_classification_id_goals"
+                                 onDelete="CASCADE"
+                                 onUpdate="RESTRICT"
+                                 referencedColumnNames="id"
+                                 referencedTableName="exercises_classifications"/>
     </changeSet>
 </databaseChangeLog>

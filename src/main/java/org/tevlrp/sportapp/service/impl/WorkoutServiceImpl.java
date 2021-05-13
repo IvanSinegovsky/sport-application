@@ -23,8 +23,9 @@ public class WorkoutServiceImpl implements WorkoutService {
     private ExerciseClassificationRepository exerciseClassificationRepository;
 
     @Autowired
-    public WorkoutServiceImpl(WorkoutRepository workoutRepository) {
+    public WorkoutServiceImpl(WorkoutRepository workoutRepository, ExerciseClassificationRepository exerciseClassificationRepository) {
         this.workoutRepository = workoutRepository;
+        this.exerciseClassificationRepository = exerciseClassificationRepository;
     }
 
     @Override
@@ -72,6 +73,7 @@ public class WorkoutServiceImpl implements WorkoutService {
         List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
         List<List<String>> datesAndClassifiedWorkouts = new ArrayList<>(4);
         List<String> dates = new ArrayList<>(userWorkouts.size());
+        List<ExerciseClassification> exercisesClassifications = exerciseClassificationRepository.findAll();
 
         for (Workout userWorkout : userWorkouts) {
             dates.add(userWorkout.getDate().toString());
@@ -80,21 +82,14 @@ public class WorkoutServiceImpl implements WorkoutService {
         Collections.reverse(dates);
         datesAndClassifiedWorkouts.add(dates);
 
-        //todo сделать через стрим по красоте
-        //todo это уродство
-
-        List<String> exercisesClassifications = exerciseClassificationRepository.findAll().stream()
-                .map(ExerciseClassification::getName)
-                .collect(Collectors.toList());
-
-        for (String classification : exercisesClassifications) {
+        for (ExerciseClassification classification : exercisesClassifications) {
             List<String> userResults = new ArrayList<>(userWorkouts.size());
 
             for (Workout userWorkout : userWorkouts) {
                 List<Exercise> exercises = userWorkout.getExercises();
 
                 for (Exercise exercise : exercises) {
-                    if (exercise.getExerciseClassification().equals(classification)){
+                    if (exercise.getExerciseClassificationName().equals(classification.getName())){
                         userResults.add(String.valueOf(exercise.getWeight()));
                     }
                 }

@@ -10,21 +10,18 @@ import org.tevlrp.sportapp.model.workout.ExerciseClassification;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class GoalFulfillingDto {
+public class GoalRequestDto {
 
     @JsonIgnore
     private Long userId;
     private ExerciseClassification exerciseClassification;
-
     private Double weight;
-    private Double fulfillingInPercents;
 
-    public GoalFulfillingDto(ExerciseClassification exerciseClassification, Double fulfillingInPercents) {
+    public GoalRequestDto(ExerciseClassification exerciseClassification) {
         this.exerciseClassification = exerciseClassification;
-        this.fulfillingInPercents = fulfillingInPercents;
     }
 
-    public GoalFulfillingDto(Goal goal) {
+    public GoalRequestDto(Goal goal) {
         this.userId = goal.getUserId();
         this.exerciseClassification = goal.getExerciseClassification();
         this.weight = goal.getWeight();
@@ -39,12 +36,12 @@ public class GoalFulfillingDto {
         return goal;
     }
 
-    public GoalFulfillingDto toGoalFulfillingDto(Goal goal) {
-        GoalFulfillingDto goalFulfillingDto = new GoalFulfillingDto();
-        goalFulfillingDto.setUserId(goal.getUserId());
-        goalFulfillingDto.setExerciseClassification(goal.getExerciseClassification());
-        goalFulfillingDto.setWeight(goal.getWeight());
+    public GoalRequestDto toGoalFulfillingDto(Goal goal) {
+        GoalRequestDto goalRequestDto = new GoalRequestDto();
+        goalRequestDto.setUserId(goal.getUserId());
+        goalRequestDto.setExerciseClassification(goal.getExerciseClassification());
+        goalRequestDto.setWeight(goal.getWeight());
 
-        return goalFulfillingDto;
+        return goalRequestDto;
     }
 }

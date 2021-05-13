@@ -6,6 +6,6 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class Exercise {
-    private String ExerciseClassification;
+    private String ExerciseClassificationName;
     private Double weight;
 }

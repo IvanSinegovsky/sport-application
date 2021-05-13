@@ -15,8 +15,8 @@ public class Goal {
 
     private Long userId;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "exercises_classifications", referencedColumnName = "name")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "exercise_classification_id")
     private ExerciseClassification exerciseClassification;
 
     private Double weight;
