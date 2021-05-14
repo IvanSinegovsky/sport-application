@@ -14,6 +14,7 @@ import org.tevlrp.sportapp.service.WorkoutService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin
 @Slf4j
@@ -32,7 +33,7 @@ public class WorkoutControllerV1 {
     @PostMapping("add")
     public ResponseEntity addWorkout(@RequestHeader Map<String, String> headers,
                                      @RequestBody WorkoutDto workoutDto) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
+        Long userId = getUserIdFromHeaders(headers);
         workoutDto.setUserId(userId);
         Workout workout = workoutService.insert(workoutDto.toWorkout());
 
@@ -46,8 +47,7 @@ public class WorkoutControllerV1 {
     //todo change userid transfer to query string
     @GetMapping("workouts")
     public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
-
+        Long userId = getUserIdFromHeaders(headers);
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
         if (userWorkouts == null) {
@@ -60,8 +60,7 @@ public class WorkoutControllerV1 {
     @DeleteMapping("delete")
     public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
                                                 @RequestHeader Map<String, String> headers) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
-
+        Long userId = getUserIdFromHeaders(headers);
         workoutService.deleteByUserIdAndDate(userId, date);
 
         return  ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
@@ -70,8 +69,7 @@ public class WorkoutControllerV1 {
     @GetMapping("workout")
     public ResponseEntity getWorkoutByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
                                                     @RequestHeader Map<String, String> headers) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
-
+        Long userId = getUserIdFromHeaders(headers);
         Workout workout = workoutService.findByUserIdAndDate(userId, date);
 
         if (workout == null) {
@@ -82,11 +80,30 @@ public class WorkoutControllerV1 {
     }
 
     @GetMapping("classified_workouts")
-    public ResponseEntity getGroupedUserWorkouts(@RequestHeader Map<String, String> headers) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
-
+    public ResponseEntity getClassifiedByUserId(@RequestHeader Map<String, String> headers) {
+        Long userId = getUserIdFromHeaders(headers);
         List<List<String>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
 
         return  ResponseEntity.status(HttpStatus.OK).body(classifiedWorkouts);
+    }
+
+    @GetMapping("current_classified_workouts")
+    public ResponseEntity getCurrentClassifiedByUserId(
+            @RequestParam(value = "exerciseClassification", required = true) String exerciseClassificationName,
+            @RequestHeader Map<String, String> headers
+    ) {
+        Long userId = getUserIdFromHeaders(headers);
+        Optional<List[]> datesAndWeights = workoutService
+                .findCurrentClassifiedByUserId(userId, exerciseClassificationName);
+
+        if (datesAndWeights.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no such exercises.");
+        }
+
+        return ResponseEntity.ok(datesAndWeights);
+    }
+
+    private Long getUserIdFromHeaders(Map<String, String> headers) {
+        return jwtTokenProvider.getId(headers.get("authorization"));
     }
 }

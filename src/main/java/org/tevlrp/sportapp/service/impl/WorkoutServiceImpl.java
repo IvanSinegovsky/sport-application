@@ -11,10 +11,7 @@ import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.service.WorkoutService;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -70,8 +67,8 @@ public class WorkoutServiceImpl implements WorkoutService {
 
     @Override
     public List<List<String>> findClassifiedByUserId(Long userId) {
-        List<Workout> userWorkouts = workoutRepository.findByUserId(userId);
-        List<List<String>> datesAndClassifiedWorkouts = new ArrayList<>(4);
+        List<Workout> userWorkouts = getAllUsersWorkouts(userId);
+        List<List<String>> datesAndClassifiedWorkouts = new ArrayList<>();
         List<String> dates = new ArrayList<>(userWorkouts.size());
         List<ExerciseClassification> exercisesClassifications = exerciseClassificationRepository.findAll();
 
@@ -99,5 +96,31 @@ public class WorkoutServiceImpl implements WorkoutService {
         }
 
         return datesAndClassifiedWorkouts;
+    }
+
+    @Override
+    public Optional<List[]> findCurrentClassifiedByUserId(Long userId, String exerciseClassificationName) {
+        List<Workout> userWorkouts = getAllUsersWorkouts(userId);
+        List[] datesAndWeights = new List[2];
+        List<String> dates = new ArrayList<>(userWorkouts.size());
+        List<String> results = new ArrayList<>(userWorkouts.size());
+        datesAndWeights[0] = dates;
+        datesAndWeights[1] = results;
+
+        for (Workout userWorkout : userWorkouts) {
+                Optional<Exercise> exerciseToAdd = userWorkout.getExercises().stream()
+                        .filter(exercise -> exercise.getExerciseClassificationName().equals(exerciseClassificationName))
+                        .findAny();
+                if (exerciseToAdd.isPresent()) {
+                    dates.add(userWorkout.getDate().toString());
+                    results.add(String.valueOf(exerciseToAdd.get().getWeight()));
+                }
+        }
+
+        return Optional.of(datesAndWeights);
+    }
+
+    private List<Workout> getAllUsersWorkouts(Long userId) {
+        return workoutRepository.findByUserId(userId);
     }
 }
