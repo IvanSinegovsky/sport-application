@@ -2,6 +2,7 @@ package org.tevlrp.sportapp.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.GoalRequestDto;
@@ -29,24 +30,28 @@ public class GoalControllerV1 {
     }
 
     @GetMapping("goals")
-    public ResponseEntity getUserGoalsFulfilments(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<List<GoalResponseDto>> getUserGoalsFulfilments(@RequestHeader Map<String, String> headers) {
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         List<GoalResponseDto> goalsFulfilling = goalService.getGoalsFulfillmentPercentsByUserId(userId);
-        return ResponseEntity.ok(goalsFulfilling);
+
+        if (goalsFulfilling.isEmpty()) {
+            return new ResponseEntity(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(goalsFulfilling, HttpStatus.OK);
     }
 
     @PostMapping("add")
-    public ResponseEntity addGoal(@RequestHeader Map<String, String> headers,
+    public ResponseEntity<GoalResponseDto> addGoal(@RequestHeader Map<String, String> headers,
                                      @RequestBody GoalRequestDto goalRequestDto) {
-        log.info(goalRequestDto.toString());
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         goalRequestDto.setUserId(userId);
         Optional<GoalResponseDto> goalDtoOptional = goalService.add(goalRequestDto);
 
         if (goalDtoOptional.isEmpty()) {
-            throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new goal.");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
-        return ResponseEntity.ok(goalDtoOptional.get());
+        return new ResponseEntity<>(goalDtoOptional.get(), HttpStatus.CREATED);
     }
 }

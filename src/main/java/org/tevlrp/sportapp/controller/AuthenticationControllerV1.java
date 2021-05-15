@@ -2,6 +2,7 @@ package org.tevlrp.sportapp.controller;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -35,37 +36,37 @@ public class AuthenticationControllerV1 {
     }
 
     @PostMapping("login")
-    public ResponseEntity login(@RequestBody UserAuthenticationRequestDto requestDto) {
+    public ResponseEntity<Map<String, String>> login(@RequestBody UserAuthenticationRequestDto requestDto) {
         try {
             String email = requestDto.getEmail();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
             User user = userService.findByEmail(email);
 
             if (user == null) {
-                throw new UsernameNotFoundException("User with email: " + email + " does not exist");
+                return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
             String token = jwtTokenProvider.createToken(user.getId(), user.getEmail());
 
-            Map<Object, Object> response = new HashMap<>();
-            response.put("email", email);
-            response.put("token", token);
+            Map<String, String> body = new HashMap<>();
+            body.put("email", email);
+            body.put("token", token);
 
-            return ResponseEntity.ok(response);
+            return new ResponseEntity<>(body, HttpStatus.ACCEPTED);
         } catch (AuthenticationException e) {
-            throw new BadCredentialsException("Invalid email or password");
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
     }
 
     @PostMapping("registration")
-    public ResponseEntity register(@RequestBody UserRegistrationDto userRegistrationDto) {
+    public ResponseEntity<Map<String, String>> register(@RequestBody UserRegistrationDto userRegistrationDto) {
         log.info(userRegistrationDto.toString());
 
         User user = userRegistrationDto.toUser();
         User registeredUser = userService.register(user);
 
         if (registeredUser == null) {
-            throw new BadCredentialsException("Cannot register user with such credentials");
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
         UserAuthenticationRequestDto requestDto = new UserAuthenticationRequestDto(
@@ -76,18 +77,22 @@ public class AuthenticationControllerV1 {
         return login(requestDto);
     }
 
-    //todo beta test method
     @GetMapping("auth")
-    public ResponseEntity auth(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<Map<String, String>> auth(@RequestHeader Map<String, String> headers) {
         String oldToken = headers.get("authorization");
         Long userId = Long.valueOf(jwtTokenProvider.getId(oldToken));
 
         User user = userService.findById(userId);
+
+        if (user == null) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+
         String newToken = jwtTokenProvider.createToken(userId, user.getEmail());
 
-        Map<Object, Object> response = new HashMap<>();
-        response.put("token", newToken);
+        Map<String, String> body = new HashMap<>();
+        body.put("token", newToken);
 
-        return ResponseEntity.ok(response);
+        return new ResponseEntity<>(body, HttpStatus.OK);
     }
 }

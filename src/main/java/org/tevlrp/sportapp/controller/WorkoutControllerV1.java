@@ -46,49 +46,55 @@ public class WorkoutControllerV1 {
 
     //todo change userid transfer to query string
     @GetMapping("workouts")
-    public ResponseEntity getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<List<Workout>> getAllUserWorkouts(@RequestHeader Map<String, String> headers) {
         Long userId = getUserIdFromHeaders(headers);
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
         if (userWorkouts == null) {
-            throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot get users workouts.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(userWorkouts);
+        return new ResponseEntity<>(userWorkouts, HttpStatus.OK);
     }
 
     @DeleteMapping("delete")
     public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
-                                                @RequestHeader Map<String, String> headers) {
+                                                  @RequestHeader Map<String, String> headers) {
         Long userId = getUserIdFromHeaders(headers);
         workoutService.deleteByUserIdAndDate(userId, date);
 
-        return  ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
+        return ResponseEntity.status(HttpStatus.OK).body("Workout was successfully deleted.");
     }
 
     @GetMapping("workout")
-    public ResponseEntity getWorkoutByUserIdAndDate(@RequestParam(value = "date", required = false) LocalDate date,
-                                                    @RequestHeader Map<String, String> headers) {
+    public ResponseEntity<Workout> getWorkoutByUserIdAndDate(
+            @RequestParam(value = "date", required = false) LocalDate date,
+            @RequestHeader Map<String, String> headers)
+    {
         Long userId = getUserIdFromHeaders(headers);
         Workout workout = workoutService.findByUserIdAndDate(userId, date);
 
         if (workout == null) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no workouts this day.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(workout);
+        return new ResponseEntity<>(workout, HttpStatus.OK);
     }
 
     @GetMapping("classified_workouts")
-    public ResponseEntity getClassifiedByUserId(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<List<List<String>>> getClassifiedByUserId(@RequestHeader Map<String, String> headers) {
         Long userId = getUserIdFromHeaders(headers);
         List<List<String>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
 
-        return  ResponseEntity.status(HttpStatus.OK).body(classifiedWorkouts);
+        if (classifiedWorkouts.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(classifiedWorkouts, HttpStatus.OK);
     }
 
     @GetMapping("current_classified_workouts")
-    public ResponseEntity getCurrentClassifiedByUserId(
+    public ResponseEntity<List[]> getCurrentClassifiedByUserId(
             @RequestParam(value = "exerciseClassification", required = true) String exerciseClassificationName,
             @RequestHeader Map<String, String> headers
     ) {
@@ -97,10 +103,10 @@ public class WorkoutControllerV1 {
                 .findCurrentClassifiedByUserId(userId, exerciseClassificationName);
 
         if (datesAndWeights.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body("User has no such exercises.");
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return ResponseEntity.ok(datesAndWeights);
+        return new ResponseEntity<>(datesAndWeights.get(), HttpStatus.OK);
     }
 
     private Long getUserIdFromHeaders(Map<String, String> headers) {

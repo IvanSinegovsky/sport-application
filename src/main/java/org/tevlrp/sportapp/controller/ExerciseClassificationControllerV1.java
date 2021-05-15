@@ -25,13 +25,13 @@ public class ExerciseClassificationControllerV1 {
     }
 
     @GetMapping("exercises_classifications")
-    public ResponseEntity getAllExercisesClassifications() {
+    public ResponseEntity<List<String>> getAllExercisesClassifications() {
         List<String> allExercisesClassifications = exerciseClassificationService.getAllExercisesClassifications();
 
         if (allExercisesClassifications == null) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return ResponseEntity.ok(allExercisesClassifications);
+        return new ResponseEntity(allExercisesClassifications, HttpStatus.OK);
     }
 }
