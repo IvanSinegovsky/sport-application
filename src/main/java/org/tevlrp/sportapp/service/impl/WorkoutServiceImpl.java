@@ -28,21 +28,18 @@ public class WorkoutServiceImpl implements WorkoutService {
     @Override
     public List<Workout> getAll() {
         List<Workout> workouts = workoutRepository.findAll();
-        log.info("IN WorkoutServiceImpl getAll() - {} workouts found", workouts.toString());
         return workouts;
     }
 
     @Override
-    public Workout insert(Workout workout) {
-        Workout savedWorkout = workoutRepository.insert(workout);
-        log.info("IN WorkoutServiceImpl insert() - {}", savedWorkout);
-        return savedWorkout;
+    public Optional<Workout> insert(Workout workout) {
+        Optional<Workout> savedWorkoutOptional = Optional.ofNullable(workoutRepository.insert(workout));
+        return savedWorkoutOptional;
     }
 
     @Override
     public List<Workout> findByUserId(Long userId) {
         List<Workout> workouts = workoutRepository.findByUserId(userId);
-        log.info("IN WorkoutServiceImpl findByUser() - {} workouts found", workouts.toString());
         return workouts;
     }
 
@@ -54,15 +51,12 @@ public class WorkoutServiceImpl implements WorkoutService {
 
         LocalDate localDate = LocalDate.of(year,month, day);
         workoutRepository.deleteByUserIdAndDate(userId, localDate);
-        log.info("IN WorkoutServiceImpl deleteByUserIdAndDate() - workout with userId: {} and Date: {} successfully deleted",
-                userId, date);
     }
 
     @Override
-    public Workout findByUserIdAndDate(Long userId, LocalDate date) {
-        Workout workoutByDate = workoutRepository.findByUserIdAndDate(userId, date);
-        log.info("IN WorkoutServiceImpl findByUserIdAndDate() - {} workouts found", workoutByDate.toString());
-        return workoutByDate;
+    public Optional<Workout> findByUserIdAndDate(Long userId, LocalDate date) {
+        Optional<Workout> workoutByDateOptional = Optional.ofNullable(workoutRepository.findByUserIdAndDate(userId, date));
+        return workoutByDateOptional;
     }
 
     @Override
@@ -117,7 +111,7 @@ public class WorkoutServiceImpl implements WorkoutService {
                 }
         }
 
-        return Optional.of(datesAndWeights);
+        return Optional.ofNullable(datesAndWeights);
     }
 
     private List<Workout> getAllUsersWorkouts(Long userId) {

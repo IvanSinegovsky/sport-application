@@ -35,13 +35,13 @@ public class WorkoutControllerV1 {
                                      @RequestBody WorkoutDto workoutDto) {
         Long userId = getUserIdFromHeaders(headers);
         workoutDto.setUserId(userId);
-        Workout workout = workoutService.insert(workoutDto.toWorkout());
+        Optional<Workout> workoutOptional = workoutService.insert(workoutDto.toWorkout());
 
-        if (workout == null) {
+        if (workoutOptional.isEmpty()) {
             throw new WorkoutRepositoryException("Something in repository went wrong:( Cannot save new workout.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(workout);
+        return ResponseEntity.status(HttpStatus.OK).body(workoutOptional.get());
     }
 
     //todo change userid transfer to query string
@@ -50,7 +50,7 @@ public class WorkoutControllerV1 {
         Long userId = getUserIdFromHeaders(headers);
         List<Workout> userWorkouts = workoutService.findByUserId(userId);
 
-        if (userWorkouts == null) {
+        if (userWorkouts.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
@@ -72,13 +72,13 @@ public class WorkoutControllerV1 {
             @RequestHeader Map<String, String> headers)
     {
         Long userId = getUserIdFromHeaders(headers);
-        Workout workout = workoutService.findByUserIdAndDate(userId, date);
+        Optional<Workout> workoutOptional = workoutService.findByUserIdAndDate(userId, date);
 
-        if (workout == null) {
+        if (workoutOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(workout, HttpStatus.OK);
+        return new ResponseEntity<>(workoutOptional.get(), HttpStatus.OK);
     }
 
     @GetMapping("classified_workouts")
@@ -99,14 +99,14 @@ public class WorkoutControllerV1 {
             @RequestHeader Map<String, String> headers
     ) {
         Long userId = getUserIdFromHeaders(headers);
-        Optional<List[]> datesAndWeights = workoutService
+        Optional<List[]> datesAndWeightsOptional = workoutService
                 .findCurrentClassifiedByUserId(userId, exerciseClassificationName);
 
-        if (datesAndWeights.isEmpty()) {
+        if (datesAndWeightsOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        return new ResponseEntity<>(datesAndWeights.get(), HttpStatus.OK);
+        return new ResponseEntity<>(datesAndWeightsOptional.get(), HttpStatus.OK);
     }
 
     private Long getUserIdFromHeaders(Map<String, String> headers) {

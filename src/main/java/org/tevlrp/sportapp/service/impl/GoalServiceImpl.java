@@ -78,7 +78,6 @@ public class GoalServiceImpl implements GoalService {
 
         for (Map.Entry<String, Double> entry : classificationNameToWeight.entrySet()) {
             for (Goal goal : userGoals) {
-                log.info("GOALS {}", goal.toString());
                 if (entry.getKey().equals(goal.getExerciseClassification().getName())) {
                     goalResponseDtos.add(new GoalResponseDto(
                             goal.getExerciseClassification().getName(),
@@ -87,7 +86,6 @@ public class GoalServiceImpl implements GoalService {
                 }
             }
         }
-        log.info("FULFILLED {}", goalResponseDtos);
 
         return goalResponseDtos;
     }

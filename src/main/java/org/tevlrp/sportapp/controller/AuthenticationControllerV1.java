@@ -18,6 +18,7 @@ import org.tevlrp.sportapp.service.UserService;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin
 @Slf4j
@@ -40,12 +41,13 @@ public class AuthenticationControllerV1 {
         try {
             String email = requestDto.getEmail();
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, requestDto.getPassword()));
-            User user = userService.findByEmail(email);
+            Optional<User> userOptional = userService.findByEmail(email);
 
-            if (user == null) {
+            if (userOptional.isEmpty()) {
                 return new ResponseEntity<>(HttpStatus.FORBIDDEN);
             }
 
+            User user = userOptional.get();
             String token = jwtTokenProvider.createToken(user.getId(), user.getEmail());
 
             Map<String, String> body = new HashMap<>();
@@ -60,15 +62,14 @@ public class AuthenticationControllerV1 {
 
     @PostMapping("registration")
     public ResponseEntity<Map<String, String>> register(@RequestBody UserRegistrationDto userRegistrationDto) {
-        log.info(userRegistrationDto.toString());
-
         User user = userRegistrationDto.toUser();
-        User registeredUser = userService.register(user);
+        Optional<User> registeredUserOptional = userService.register(user);
 
-        if (registeredUser == null) {
+        if (registeredUserOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
 
+        User registeredUser = registeredUserOptional.get();
         UserAuthenticationRequestDto requestDto = new UserAuthenticationRequestDto(
                 registeredUser.getEmail(),
                 registeredUser.getPassword()
@@ -80,15 +81,15 @@ public class AuthenticationControllerV1 {
     @GetMapping("auth")
     public ResponseEntity<Map<String, String>> auth(@RequestHeader Map<String, String> headers) {
         String oldToken = headers.get("authorization");
-        Long userId = Long.valueOf(jwtTokenProvider.getId(oldToken));
+        Long userId = jwtTokenProvider.getId(oldToken);
 
-        User user = userService.findById(userId);
+        Optional<User> userOptional = userService.findById(userId);
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.FORBIDDEN);
         }
 
-        String newToken = jwtTokenProvider.createToken(userId, user.getEmail());
+        String newToken = jwtTokenProvider.createToken(userId, userOptional.get().getEmail());
 
         Map<String, String> body = new HashMap<>();
         body.put("token", newToken);

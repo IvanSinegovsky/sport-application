@@ -13,6 +13,7 @@ import org.tevlrp.sportapp.service.UserService;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -29,7 +30,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User register(User user) {
+    public Optional<User> register(User user) {
         Role roleUser = roleRepository.findByName("ROLE_USER");
         List<Role> userRoles = new ArrayList<>();
         userRoles.add(roleUser);
@@ -42,7 +43,7 @@ public class UserServiceImpl implements UserService {
 
         log.info("IN UserServiceImpl register - user: {} successfully registered", registeredUser);
 
-        return registeredUser;
+        return Optional.ofNullable(registeredUser);
     }
 
     @Override
@@ -53,23 +54,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User findByEmail(String email) {
+    public Optional<User> findByEmail(String email) {
         User result = userRepository.findByEmail(email);
         log.info("IN UserServiceImpl findByUsername - user: {} found by email: {}", result, email);
-        return result;
+        return Optional.ofNullable(result);
     }
 
     @Override
-    public User findById(Long id) {
+    public Optional<User> findById(Long id) {
         User result = userRepository.findById(id).orElse(null);
-
-        if (result == null) {
-            log.warn("IN UserServiceImpl findById - no user found by id: {}", id);
-            return null;
-        }
-
-        log.info("IN UserServiceImpl findById - user: {} found by id: {}", result.toString(), id);
-        return result;
+        return Optional.ofNullable(result);
     }
 
     @Override

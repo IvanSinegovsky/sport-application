@@ -11,6 +11,8 @@ import org.tevlrp.sportapp.security.jwt.JwtUser;
 import org.tevlrp.sportapp.security.jwt.JwtUserFactory;
 import org.tevlrp.sportapp.service.UserService;
 
+import java.util.Optional;
+
 @Service
 @Slf4j
 public class JwtUserDetailsService implements UserDetailsService {
@@ -24,13 +26,13 @@ public class JwtUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        User user = userService.findByEmail(email);
+        Optional<User> userOptional = userService.findByEmail(email);
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             throw new UsernameNotFoundException("User with email: " + email + " not found");
         }
 
-        JwtUser jwtUser = JwtUserFactory.create(user);
+        JwtUser jwtUser = JwtUserFactory.create(userOptional.get());
         log.info("IN loadUserByUsername - user with email: {} successfully loaded", email);
         return jwtUser;
     }

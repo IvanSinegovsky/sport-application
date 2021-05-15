@@ -11,6 +11,8 @@ import org.tevlrp.sportapp.dto.AdminUserDto;
 import org.tevlrp.sportapp.model.User;
 import org.tevlrp.sportapp.service.UserService;
 
+import java.util.Optional;
+
 @RestController
 @RequestMapping(value = "/api/v1/admin/")
 public class AdminControllerV1 {
@@ -23,13 +25,13 @@ public class AdminControllerV1 {
 
     @GetMapping(value = "users/{id}")
     public ResponseEntity<AdminUserDto> getUserById(@PathVariable(name = "id") Long id) {
-        User user = userService.findById(id);
+        Optional<User> userOptional = userService.findById(id);
 
-        if (user == null) {
+        if (userOptional.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
-        AdminUserDto result = AdminUserDto.fromUser(user);
+        AdminUserDto result = AdminUserDto.fromUser(userOptional.get());
 
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

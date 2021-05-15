@@ -28,7 +28,7 @@ public class ExerciseClassificationControllerV1 {
     public ResponseEntity<List<String>> getAllExercisesClassifications() {
         List<String> allExercisesClassifications = exerciseClassificationService.getAllExercisesClassifications();
 
-        if (allExercisesClassifications == null) {
+        if (allExercisesClassifications.isEmpty()) {
             return new ResponseEntity<>(HttpStatus.NO_CONTENT);
         }
 
