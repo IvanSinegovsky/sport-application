@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.GoalRequestDto;
 import org.tevlrp.sportapp.dto.GoalResponseDto;
-import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.GoalService;
 
@@ -30,7 +29,7 @@ public class GoalControllerV1 {
     }
 
     @GetMapping("goals")
-    public ResponseEntity<List<GoalResponseDto>> getUserGoalsFulfilments(@RequestHeader Map<String, String> headers) {
+    public ResponseEntity<List<GoalResponseDto>> getUserGoalsPercents(@RequestHeader Map<String, String> headers) {
         Long userId = jwtTokenProvider.getId(headers.get("authorization"));
         List<GoalResponseDto> goalsFulfilling = goalService.getGoalsFulfillmentPercentsByUserId(userId);
 

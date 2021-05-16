@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/v1/classification/")
 public class ExerciseClassificationControllerV1 {
-    private ExerciseClassificationService exerciseClassificationService;
+    private final ExerciseClassificationService exerciseClassificationService;
 
     @Autowired
     public ExerciseClassificationControllerV1(ExerciseClassificationService exerciseClassificationService) {

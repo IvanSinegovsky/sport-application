@@ -3,6 +3,7 @@ package org.tevlrp.sportapp.security.jwt;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.tevlrp.sportapp.model.User;
 
 import java.util.Collection;
 
@@ -16,12 +17,23 @@ public class JwtUser implements UserDetails {
     private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
+    public JwtUser(User user) {
+        this.id = user.getId();
+        this.firstName = user.getFirstName();
+        this.lastName = user.getLastName();
+        this.email = user.getEmail();
+        this.password = user.getPassword();
+        this.authorities = null;//todo with casting roles to authorities
+        this.enabled = user.getStatus().equals("ACTIVE");
+    }
+
     public JwtUser(
             Long id,
             String firstName,
             String lastName,
             String email,
-            String password, Collection<? extends GrantedAuthority> authorities,
+            String password,
+            Collection<? extends GrantedAuthority> authorities,
             boolean enabled
     ) {
         this.id = id;
@@ -54,14 +66,6 @@ public class JwtUser implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    public String getFirstname() {
-        return firstName;
-    }
-
-    public String getLastname() {
-        return lastName;
     }
 
     public String getEmail() {

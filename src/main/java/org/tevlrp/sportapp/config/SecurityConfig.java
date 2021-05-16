@@ -41,10 +41,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .antMatchers(LOGIN_ENDPOINT).permitAll()
-                .antMatchers(CALENDAR_ENDPOINT).permitAll()
+                .antMatchers(CALENDAR_ENDPOINT).authenticated()
                 .antMatchers(ADMIN_ENDPOINT).hasRole("ADMIN")
-                .antMatchers(GOAL_ENDPOINT).permitAll()
-                .antMatchers(EXERCISE_CLASSIFICATION_ENDPOINT).permitAll()
+                .antMatchers(GOAL_ENDPOINT).authenticated()
+                .antMatchers(EXERCISE_CLASSIFICATION_ENDPOINT).authenticated()
                 .anyRequest().authenticated()
                 .and()
                 .apply(new JwtConfigurer(jwtTokenProvider));

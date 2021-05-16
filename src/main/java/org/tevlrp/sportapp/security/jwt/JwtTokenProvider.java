@@ -11,11 +11,14 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.tevlrp.sportapp.exception.JwtAuthenticationException;
+import org.tevlrp.sportapp.model.User;
+import org.tevlrp.sportapp.service.UserService;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 
 @Component
 public class JwtTokenProvider {
@@ -24,7 +27,7 @@ public class JwtTokenProvider {
     @Value("${jwt.token.expired}")
     private long validityInMilliseconds;
     @Autowired
-    private UserDetailsService userDetailsService;
+    private UserService userService;
 
     @Bean
     public BCryptPasswordEncoder passwordEncoder() {
@@ -54,8 +57,14 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        UserDetails userDetails = this.userDetailsService.loadUserByUsername(String.valueOf(getId(token)));
-        return new UsernamePasswordAuthenticationToken(userDetails, "", userDetails.getAuthorities());
+        Optional<User> userOptional = userService.findById(getId(token));
+
+        if (userOptional.isPresent()) {
+            JwtUser jwtUser = new JwtUser(userOptional.get());
+            return new UsernamePasswordAuthenticationToken(jwtUser, "", jwtUser.getAuthorities());
+        } else {
+            throw new RuntimeException("hmm..");//todo change to valid exception
+        }
     }
 
     public Long getId(String token) {
