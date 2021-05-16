@@ -11,7 +11,10 @@ import org.tevlrp.sportapp.repository.WorkoutRepository;
 import org.tevlrp.sportapp.service.WorkoutService;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j

@@ -6,8 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.tevlrp.sportapp.exception.JwtAuthenticationException;
@@ -60,24 +58,15 @@ public class JwtTokenProvider {
         Optional<User> userOptional = userService.findById(getId(token));
 
         if (userOptional.isPresent()) {
-            JwtUser jwtUser = new JwtUser(userOptional.get());
+            JwtUser jwtUser = JwtUserFactory.create(userOptional.get());
             return new UsernamePasswordAuthenticationToken(jwtUser, "", jwtUser.getAuthorities());
         } else {
-            throw new RuntimeException("hmm..");//todo change to valid exception
+            throw new MalformedJwtException("[CUSTOM] Expired or invalid token");
         }
     }
 
     public Long getId(String token) {
         return Long.valueOf(Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody().getSubject());
-    }
-
-    //todo change to optional
-    public String resolveToken(HttpServletRequest req) {
-        String bearerToken = req.getHeader("Authorization");
-        if (bearerToken != null && bearerToken.startsWith("Bearer_")) {
-            return bearerToken.substring(7, bearerToken.length());
-        }
-        return null;
     }
 
     public boolean validateToken(String token) {

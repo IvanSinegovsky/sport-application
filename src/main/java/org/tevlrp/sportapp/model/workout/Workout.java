@@ -20,7 +20,7 @@ public class Workout {
     @NotNull
     private LocalDate date;
 
-    //todo length
+    //todo validate length
     private List<Exercise> exercises;
 
     private String description;

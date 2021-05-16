@@ -17,16 +17,6 @@ public class JwtUser implements UserDetails {
     private final boolean enabled;
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public JwtUser(User user) {
-        this.id = user.getId();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.email = user.getEmail();
-        this.password = user.getPassword();
-        this.authorities = null;//todo with casting roles to authorities
-        this.enabled = user.getStatus().equals("ACTIVE");
-    }
-
     public JwtUser(
             Long id,
             String firstName,

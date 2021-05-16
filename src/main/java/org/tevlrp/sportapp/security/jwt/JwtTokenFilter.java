@@ -11,8 +11,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
-import java.util.Enumeration;
-import java.util.Locale;
 
 @Slf4j
 public class JwtTokenFilter extends GenericFilterBean {
