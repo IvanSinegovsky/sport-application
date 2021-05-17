@@ -1,3 +1,4 @@
+
 package org.tevlrp.sportapp.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -21,7 +22,8 @@ public class JwtUser implements UserDetails {
             String firstName,
             String lastName,
             String email,
-            String password, Collection<? extends GrantedAuthority> authorities,
+            String password,
+            Collection<? extends GrantedAuthority> authorities,
             boolean enabled
     ) {
         this.id = id;
@@ -54,14 +56,6 @@ public class JwtUser implements UserDetails {
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
-    }
-
-    public String getFirstname() {
-        return firstName;
-    }
-
-    public String getLastname() {
-        return lastName;
     }
 
     public String getEmail() {
