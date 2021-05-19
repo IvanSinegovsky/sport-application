@@ -35,32 +35,29 @@ public class GoalServiceImpl implements GoalService {
 
     @Override
     public Optional<GoalResponseDto> add(GoalRequestDto goalRequestDto) {
-        ExerciseClassification goalToAddExerciseClassification = exerciseClassificationRepository
+        ExerciseClassification goalExerciseClassification = exerciseClassificationRepository
                 .findByName(goalRequestDto.getExerciseClassificationName());
+        List<Exercise> allUserExercises = getAllUserExercises(goalRequestDto.getUserId());
+        String exerciseClassificationName = goalExerciseClassification.getName();
 
-        System.out.println(goalRequestDto.getExerciseClassificationName());
+        Goal savedGoal = goalRepository.save(new Goal(
+                goalRequestDto.getUserId(),
+                goalExerciseClassification,
+                goalRequestDto.getWeight())
+        );
 
-        Goal goalToAdd = new Goal(goalRequestDto.getUserId(),
-                goalToAddExerciseClassification,
-                goalRequestDto.getWeight());
+        Optional<Map.Entry<String, Double>> classificationToMaxWeight =
+                allUserExercisesClassificationsMaxWeights(allUserExercises)
+                        .entrySet()
+                        .stream()
+                        .filter(map -> map.getKey().equals(exerciseClassificationName))
+                        .findAny();
 
-        Goal savedGoal = goalRepository.save(goalToAdd);
-        List<Exercise> allUserExercises = getAllUserExercises(goalToAdd.getUserId());
+        if (classificationToMaxWeight.isPresent()){
+            Double goalFulfilling = percentsFulfilling(classificationToMaxWeight.get().getValue(), savedGoal.getWeight());
+            GoalResponseDto goalResponseDto = new GoalResponseDto(exerciseClassificationName, goalFulfilling);
 
-        Map<String, Double> classificationToWeight = allUserExercisesClassificationsMaxWeights(allUserExercises);
-        Map<String, Double> currentGoalClassificationToWeight = classificationToWeight.entrySet().stream()
-                .filter(map -> map.getKey().equals(savedGoal.getExerciseClassification().getName()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-
-        for (Map.Entry<String, Double> entry : currentGoalClassificationToWeight.entrySet()) {
-                if (entry.getKey().equals(savedGoal.getExerciseClassification().getName())) {
-                    GoalResponseDto goalResponseDto = new GoalResponseDto(
-                            savedGoal.getExerciseClassification().getName(),
-                            percentsFulfilling(entry.getValue(), savedGoal.getWeight())
-                    );
-
-                    return Optional.of(goalResponseDto);
-                }
+            return Optional.of(goalResponseDto);
         }
 
         return Optional.empty();
@@ -72,22 +69,28 @@ public class GoalServiceImpl implements GoalService {
         List<Goal> userGoals = goalRepository.findAllByUserId(userId);
         List<Exercise> allUserExercises = getAllUserExercises(userId);
         Map<String, Double> classificationNameToWeight = allUserExercisesClassificationsMaxWeights(allUserExercises);
-        List<GoalResponseDto> goalResponseDtos = new ArrayList<>();
 
-        classificationNameToWeight.forEach((key, value) -> log.info(key + ":" + value));
+        List<GoalResponseDto> allUserGoals = classificationNameToWeight
+                .entrySet()
+                .stream()
+                .map((map) ->  {
+                    String classificationName = map.getKey();
+                    Double maxWeight = map.getValue();
+                    Optional<Goal> currentExerciseClassificationGoal
+                            = userGoals.stream()
+                            .filter(goal -> goal.getExerciseClassification().getName().equals(classificationName))
+                            .findFirst();
 
-        for (Map.Entry<String, Double> entry : classificationNameToWeight.entrySet()) {
-            for (Goal goal : userGoals) {
-                if (entry.getKey().equals(goal.getExerciseClassification().getName())) {
-                    goalResponseDtos.add(new GoalResponseDto(
-                            goal.getExerciseClassification().getName(),
-                            percentsFulfilling(entry.getValue(), goal.getWeight())
-                    ));
-                }
-            }
-        }
 
-        return goalResponseDtos;
+                    Double fulfilling = currentExerciseClassificationGoal
+                            .map(goal -> percentsFulfilling(maxWeight, goal.getWeight())).orElse(0.0);
+
+                    return new GoalResponseDto(classificationName, fulfilling);
+                })
+                .filter(goalResponseDto -> !goalResponseDto.getFulfillingInPercents().equals(0.0))
+                .collect(Collectors.toList());
+
+        return allUserGoals;
     }
 
     @Override

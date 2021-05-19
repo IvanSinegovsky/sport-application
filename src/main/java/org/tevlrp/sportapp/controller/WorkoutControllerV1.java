@@ -109,6 +109,18 @@ public class WorkoutControllerV1 {
         return new ResponseEntity<>(datesAndWeightsOptional.get(), HttpStatus.OK);
     }
 
+    @GetMapping("workouts_dates")
+    public ResponseEntity<List<String>> getUserWorkoutsDates(@RequestHeader Map<String, String> headers) {
+        Long userId = getUserIdFromHeaders(headers);
+        List<String> dates = workoutService.findUserWorkoutsDates(userId);
+
+        if (dates.isEmpty()) {
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        }
+
+        return new ResponseEntity<>(dates, HttpStatus.OK);
+    }
+
     private Long getUserIdFromHeaders(Map<String, String> headers) {
         return jwtTokenProvider.getId(headers.get("authorization"));
     }

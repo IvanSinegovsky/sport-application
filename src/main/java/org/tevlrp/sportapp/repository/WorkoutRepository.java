@@ -10,8 +10,6 @@ import java.util.List;
 @Repository
 public interface WorkoutRepository extends MongoRepository<Workout, String> {
     List<Workout> findByUserId(Long userId);
-
     void deleteByUserIdAndDate(Long userId, LocalDate date);
-
     Workout findByUserIdAndDate(Long userId, LocalDate date);
 }

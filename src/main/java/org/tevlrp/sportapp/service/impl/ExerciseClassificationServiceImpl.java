@@ -23,7 +23,9 @@ public class ExerciseClassificationServiceImpl implements ExerciseClassification
     @Override
     public List<String> getAllExercisesClassifications() {
         List<ExerciseClassification> exerciseClassifications = exerciseClassificationRepository.findAll();
-        return exerciseClassifications.stream().map(ExerciseClassification::getName)
+        List<String> exerciseClassificationsNames = exerciseClassifications.stream().map(ExerciseClassification::getName)
                 .collect(Collectors.toList());
+
+        return exerciseClassificationsNames;
     }
 }

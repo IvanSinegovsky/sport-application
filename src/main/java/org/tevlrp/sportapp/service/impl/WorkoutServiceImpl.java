@@ -12,6 +12,7 @@ import org.tevlrp.sportapp.service.WorkoutService;
 
 import java.time.LocalDate;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -112,6 +113,15 @@ public class WorkoutServiceImpl implements WorkoutService {
         }
 
         return Optional.ofNullable(datesAndWeights);
+    }
+
+    @Override
+    public List<String> findUserWorkoutsDates(Long userId) {
+        List<Workout> userWorkouts = getAllUsersWorkouts(userId);
+        List<String> dates = userWorkouts.stream()
+                .map(workout -> workout.getDate().toString()).collect(Collectors.toList());
+
+        return dates;
     }
 
     private List<Workout> getAllUsersWorkouts(Long userId) {

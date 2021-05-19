@@ -20,7 +20,6 @@ public class JwtTokenFilter extends GenericFilterBean {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    //todo на странице логина при обновлении кидается Exception ExpiredToken. Здесь его отловить, чтобы не сваливалось
     @Override
     public void doFilter(ServletRequest req, ServletResponse res, FilterChain filterChain)
             throws IOException, ServletException {
