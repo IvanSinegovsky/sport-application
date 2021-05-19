@@ -73,19 +73,19 @@ public class GoalServiceImpl implements GoalService {
         List<GoalResponseDto> allUserGoals = classificationNameToWeight
                 .entrySet()
                 .stream()
-                .map((map) ->  {
-                    String classificationName = map.getKey();
-                    Double maxWeight = map.getValue();
+                .map((entry) ->  {
+                    String currentClassificationName = entry.getKey();
+                    Double currentMaxWeight = entry.getValue();
                     Optional<Goal> currentExerciseClassificationGoal
                             = userGoals.stream()
-                            .filter(goal -> goal.getExerciseClassification().getName().equals(classificationName))
+                            .filter(goal -> goal.getExerciseClassification().getName().equals(currentClassificationName))
                             .findFirst();
 
-
                     Double fulfilling = currentExerciseClassificationGoal
-                            .map(goal -> percentsFulfilling(maxWeight, goal.getWeight())).orElse(0.0);
+                            .map(goal -> percentsFulfilling(currentMaxWeight, goal.getWeight()))
+                            .orElse(0.0);
 
-                    return new GoalResponseDto(classificationName, fulfilling);
+                    return new GoalResponseDto(currentClassificationName, fulfilling);
                 })
                 .filter(goalResponseDto -> !goalResponseDto.getFulfillingInPercents().equals(0.0))
                 .collect(Collectors.toList());

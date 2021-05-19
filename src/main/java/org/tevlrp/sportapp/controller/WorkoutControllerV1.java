@@ -81,18 +81,6 @@ public class WorkoutControllerV1 {
         return new ResponseEntity<>(workoutOptional.get(), HttpStatus.OK);
     }
 
-    @GetMapping("classified_workouts")
-    public ResponseEntity<List<List<String>>> getClassifiedByUserId(@RequestHeader Map<String, String> headers) {
-        Long userId = getUserIdFromHeaders(headers);
-        List<List<String>> classifiedWorkouts = workoutService.findClassifiedByUserId(userId);
-
-        if (classifiedWorkouts.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-
-        return new ResponseEntity<>(classifiedWorkouts, HttpStatus.OK);
-    }
-
     @GetMapping("current_classified_workouts")
     public ResponseEntity<List[]> getCurrentClassifiedByUserId(
             @RequestParam(value = "exerciseClassification", required = true) String exerciseClassificationName,
