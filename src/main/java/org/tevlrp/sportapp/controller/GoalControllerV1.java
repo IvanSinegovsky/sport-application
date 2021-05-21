@@ -7,7 +7,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.tevlrp.sportapp.dto.GoalRequestDto;
 import org.tevlrp.sportapp.dto.GoalResponseDto;
-import org.tevlrp.sportapp.exception.WorkoutRepositoryException;
 import org.tevlrp.sportapp.security.jwt.JwtTokenProvider;
 import org.tevlrp.sportapp.service.GoalService;
 
@@ -31,7 +30,7 @@ public class GoalControllerV1 {
 
     @GetMapping("goals")
     public ResponseEntity<List<GoalResponseDto>> getUserGoalsFulfilments(@RequestHeader Map<String, String> headers) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
+        Long userId = getUserIdFromHeaders(headers);
         List<GoalResponseDto> goalsFulfilling = goalService.getGoalsFulfillmentPercentsByUserId(userId);
 
         if (goalsFulfilling.isEmpty()) {
@@ -43,8 +42,8 @@ public class GoalControllerV1 {
 
     @PostMapping("add")
     public ResponseEntity<GoalResponseDto> addGoal(@RequestHeader Map<String, String> headers,
-                                     @RequestBody GoalRequestDto goalRequestDto) {
-        Long userId = jwtTokenProvider.getId(headers.get("authorization"));
+                                                   @RequestBody GoalRequestDto goalRequestDto) {
+        Long userId = getUserIdFromHeaders(headers);
         goalRequestDto.setUserId(userId);
         Optional<GoalResponseDto> goalDtoOptional = goalService.add(goalRequestDto);
 
@@ -53,5 +52,18 @@ public class GoalControllerV1 {
         }
 
         return new ResponseEntity<>(goalDtoOptional.get(), HttpStatus.CREATED);
+    }
+
+    @DeleteMapping("delete")
+    public ResponseEntity deleteGoal(@RequestParam(value = "exerciseClassificationName") String exerciseClassificationName,
+                                     @RequestHeader Map<String, String> headers) {
+        Long userId = getUserIdFromHeaders(headers);
+        goalService.deleteByUserIdAndExerciseClassification(userId, exerciseClassificationName);
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+
+    private Long getUserIdFromHeaders(Map<String, String> headers) {
+        return jwtTokenProvider.getId(headers.get("authorization"));
     }
 }

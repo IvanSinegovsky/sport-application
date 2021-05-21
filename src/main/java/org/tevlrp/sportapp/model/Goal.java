@@ -18,7 +18,7 @@ public class Goal {
 
     private Long userId;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "exercise_classification_id")
     private ExerciseClassification exerciseClassification;
 

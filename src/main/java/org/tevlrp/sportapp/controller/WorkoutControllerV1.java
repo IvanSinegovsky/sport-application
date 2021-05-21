@@ -59,7 +59,7 @@ public class WorkoutControllerV1 {
 
     @DeleteMapping("delete")
     public ResponseEntity deleteByUserIdAndDate(@RequestParam(value = "date", required = false) String date,
-                                                  @RequestHeader Map<String, String> headers) {
+                                                @RequestHeader Map<String, String> headers) {
         Long userId = getUserIdFromHeaders(headers);
         workoutService.deleteByUserIdAndDate(userId, date);
 

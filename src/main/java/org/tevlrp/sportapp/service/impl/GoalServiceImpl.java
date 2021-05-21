@@ -3,6 +3,7 @@ package org.tevlrp.sportapp.service.impl;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.tevlrp.sportapp.dto.GoalRequestDto;
 import org.tevlrp.sportapp.dto.GoalResponseDto;
 import org.tevlrp.sportapp.model.Goal;
@@ -94,8 +95,10 @@ public class GoalServiceImpl implements GoalService {
     }
 
     @Override
-    public void deleteByUserIdAndExerciseClassification(Long userId, ExerciseClassification exerciseClassification) {
-
+    @Transactional
+    public void deleteByUserIdAndExerciseClassification(Long userId, String exerciseClassificationName) {
+        ExerciseClassification exerciseClassification = exerciseClassificationRepository.findByName(exerciseClassificationName);
+        goalRepository.deleteByUserIdAndExerciseClassification(userId, exerciseClassification);
     }
 
     private List<Exercise> getAllUserExercises(Long userId) {
