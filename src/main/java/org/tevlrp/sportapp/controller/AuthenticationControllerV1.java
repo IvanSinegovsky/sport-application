@@ -70,12 +70,13 @@ public class AuthenticationControllerV1 {
         }
 
         User registeredUser = registeredUserOptional.get();
-        UserAuthenticationRequestDto requestDto = new UserAuthenticationRequestDto(
-                registeredUser.getEmail(),
-                registeredUser.getPassword()
-        );
+        String token = jwtTokenProvider.createToken(registeredUser.getId(), user.getEmail());
 
-        return login(requestDto);
+        Map<String, String> body = new HashMap<>();
+        body.put("email", registeredUser.getEmail());
+        body.put("token", token);
+
+        return new ResponseEntity<>(body, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("auth")

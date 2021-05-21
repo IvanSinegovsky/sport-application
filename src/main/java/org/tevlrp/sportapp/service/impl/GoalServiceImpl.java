@@ -88,7 +88,9 @@ public class GoalServiceImpl implements GoalService {
 
                     return new GoalResponseDto(currentClassificationName, fulfilling);
                 })
-                .filter(goalResponseDto -> !goalResponseDto.getFulfillingInPercents().equals(0.0))
+                .filter(goalResponseDto ->
+                        goalResponseDto.getFulfillingInPercents() > 0.0
+                                && goalResponseDto.getFulfillingInPercents() < 100.0 )
                 .collect(Collectors.toList());
 
         return allUserGoals;
